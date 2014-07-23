@@ -23,15 +23,10 @@ Get GDDR5 memory information and other information from AMD Radeon GPUs.
 `./amdmeminfo [options]`
 
 Options:
-
-`-h` `--help` Display Help
-
-`-o` `--opencl` Order by OpenCL ID (cgminer/sgminer GPU order)
-
-`-q` `--quiet` Only output results
-
-`-s` `--short` Short form output - 1 GPU/line - `<OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>`
-
-`--use-stderr` Output errors to stderr
+* `-h` `--help` Display Help
+* `-o` `--opencl` Order by OpenCL ID (cgminer/sgminer GPU order)
+* `-q` `--quiet` Only output results
+* `-s` `--short` Short form output - 1 GPU/line - `<OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>`
+* `--use-stderr` Output errors to stderr
 
 
