@@ -72,15 +72,15 @@ static void print(int priority, const char *fmt, ...)
 // show help
 static void showhelp(char *program)
 {
-    printf("%s\n\n"
-      "Usage: %s [options]\n\n"
-      "Options:\n"
-      "-h, --help      Help\n"
-      "-o, --opencl    Order by OpenCL ID (cgminer/sgminer GPU order)\n"
-      "-q, --quiet     Only output results\n"
-      "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>\n"
-      "--use-stderr    Output errors to stderr\n"
-      "\n", VERSION, program);
+  printf("%s\n\n"
+    "Usage: %s [options]\n\n"
+    "Options:\n"
+    "-h, --help      Help\n"
+    "-o, --opencl    Order by OpenCL ID (cgminer/sgminer GPU order)\n"
+    "-q, --quiet     Only output results\n"
+    "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>\n"
+    "--use-stderr    Output errors to stderr\n"
+    "\n", VERSION, program);
 }
 
 
@@ -427,13 +427,13 @@ static int opencl_get_devices()
 int main(int argc, char *argv[])
 {
   gpu_t *d;
-	struct pci_access *pci;
-	struct pci_dev *pcidev;
-	int i, meminfo, manufacturer, model;
-	off_t base;
-	int *pcimem;
-	int fd;
-	int fail=0;
+  struct pci_access *pci;
+  struct pci_dev *pcidev;
+  int i, meminfo, manufacturer, model;
+  off_t base;
+  int *pcimem;
+  int fd;
+  int fail=0;
 
   if (!load_options(argc, argv)) {
     return 0;
@@ -441,11 +441,11 @@ int main(int argc, char *argv[])
 
   print(LOG_INFO, "%s\n", VERSION);
 
-	pci = pci_alloc();
-	pci_init(pci);
-	pci_scan_bus(pci);
+  pci = pci_alloc();
+  pci_init(pci);
+  pci_scan_bus(pci);
 
-	for (pcidev = pci->devices; pcidev; pcidev = pcidev->next)
+  for (pcidev = pci->devices; pcidev; pcidev = pcidev->next)
   {
     if (pcidev->device_class == PCI_CLASS_DISPLAY_VGA && pcidev->vendor_id == 0x1002) {
       if ((d = new_device()) != NULL) {
@@ -489,7 +489,7 @@ int main(int argc, char *argv[])
     }
   }
 
-	pci_cleanup(pci);
+  pci_cleanup(pci);
 
   // get open cl device ids and link them to pci devices found
   int numopencl = opencl_get_devices();
