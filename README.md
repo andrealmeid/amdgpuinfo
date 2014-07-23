@@ -1,9 +1,9 @@
 #amdmeminfo
-==========
 
 Get GDDR5 memory information and other information from AMD Radeon GPUs.
 
 ---
+
 ##Installation
 
 * Download ZIP or via Github client.
@@ -16,6 +16,7 @@ Get GDDR5 memory information and other information from AMD Radeon GPUs.
 * Optional: `sudo cp amdmeminfo /usr/local/bin`
 
 ---
+
 ##Usage
 
 `amdmeminfo [options]`
@@ -26,4 +27,5 @@ Options:
 `-q` `--quiet` Only output results
 `-s` `--short` Short form output - 1 GPU/line - `<OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>`
 `--use-stderr` Output errors to stderr
+
 
