@@ -5,7 +5,7 @@ Get GDDR5 memory information and other information from AMD Radeon GPUs.
 
 ---
 
-##Installation
+###Installation
 
 * Download ZIP or via Github client.
 * Install AMDAPPSDK/OpenCL library (required for OpenCL functions)
@@ -18,7 +18,7 @@ Get GDDR5 memory information and other information from AMD Radeon GPUs.
 
 ---
 
-##Usage
+###Usage
 
 `./amdmeminfo [options]`
 
