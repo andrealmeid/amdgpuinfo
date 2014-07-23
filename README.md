@@ -1,24 +1,29 @@
-amdmeminfo
+#amdmeminfo
 ==========
 
-Get GDDR5 memory information from these AMD Radeon GPUs:
-HD7870, HD7950, HD7970, HD7990, R9 270(x), R9 280x, R9 290(x)
+Get GDDR5 memory information and other information from AMD Radeon GPUs.
 
--------------------------
-Installation and usage:
+---
+##Installation
 
-Download ZIP or via Github client.
+* Download ZIP or via Github client.
+* Install AMDAPPSDK/OpenCL library (required for OpenCL functions)
+* `sudo apt-get install libpci-dev`
+* Unzip or git clone
+* `cd amdmeminfo`
+* Edit `Makefile` to specify AMDAPPSDK path
+* `make`
+* Optional: `sudo cp amdmeminfo /usr/local/bin`
 
-sudo apt-get install libpci-dev
+---
+##Usage
 
-Unzip
+`amdmeminfo [options]`
 
-cd amdmeminfo-master/
-
-make
-
-sudo cp amdmeminfo /usr/local/bin/
-
-amdmeminfo
-
+Options:
+`-h` `--help` DiHelp\n"
+      "-o, --opencl    Order by OpenCL ID (cgminer/sgminer GPU order)\n"
+      "-q, --quiet     Only output results\n"
+      "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>\n"
+      "--use-stderr    Output errors to stderr\n"
 
