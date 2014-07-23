@@ -549,14 +549,14 @@ int main(int argc, char *argv[])
     }
 
     d = d->next;
-	}
+  }
 
   free_devices();
 
-	if (fail) {
-		print(LOG_ERROR, "Direct PCI access failed. Run AMDMemInfo as root to get memory type information!\n");
-	}
+  if (fail) {
+    print(LOG_ERROR, "Direct PCI access failed. Run AMDMemInfo as root to get memory type information!\n");
+  }
 
-	return 0;
+  return 0;
 }
 
