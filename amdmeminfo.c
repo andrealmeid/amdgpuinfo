@@ -37,6 +37,9 @@
 #include <CL/cl_ext.h>
 #endif
 
+#define VERSION "AMDMemInfo by Zuikkis <zuikkis@gmail.com>\n" \
+      "Adapted for PiMP (www.getpimp.org) by Yann St.Arnaud <ystarnaud@gmail.com>"
+
 #define LOG_INFO 1
 #define LOG_ERROR 2
 
@@ -69,8 +72,7 @@ static void print(int priority, const char *fmt, ...)
 // show help
 static void showhelp(char *program)
 {
-    printf("AMDMemInfo by Zuikkis <zuikkis@gmail.com>\n"
-      "Updated for PiMP <www.getpimp.org> by ystarnaud <ystarnaud@gmail.com>\n\n"
+    printf("%s\n\n"
       "Usage: %s [options]\n\n"
       "Options:\n"
       "-h, --help      Help\n"
@@ -78,7 +80,7 @@ static void showhelp(char *program)
       "-q, --quiet     Only output results\n"
       "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>\n"
       "--use-stderr    Output errors to stderr\n"
-      "\n", program);
+      "\n", VERSION, program);
 }
 
 
@@ -116,19 +118,30 @@ typedef struct {
 } gputype_t;
 
 static gputype_t gputypes[] = {
-    { 0x1002, 0x679a, "Radeon HD7950/R9 280" },
-    { 0x1002, 0x6798, "Radeon HD7970/R9 280x" },
-    { 0x1002, 0x679b, "Radeon HD7990" },
     { 0x1002, 0x67b1, "Radeon R9 290" },
     { 0x1002, 0x67b0, "Radeon R9 290x" },
+    { 0x1002, 0x6798, "Radeon HD7970/R9 280x" },
+    { 0x1002, 0x679a, "Radeon HD7950/R9 280" },
     { 0x1002, 0x6811, "Radeon R9 270" },
     { 0x1002, 0x6810, "Radeon R9 270x" },
+    { 0x1002, 0x6658, "Radeon R7 260x" },
+    { 0x1002, 0x679b, "Radeon HD7990" },
+    { 0x1002, 0x679E, "Radeon HD7870XT" },
     { 0x1002, 0x6818, "Radeon HD7870" },
     { 0x1002, 0x6819, "Radeon HD7850" },
+    { 0x1002, 0x665C, "Radeon HD7790" },
+    { 0x1002, 0x671D, "Radeon HD6990" },
+    { 0x1002, 0x6718, "Radeon HD6970" },
     { 0x1002, 0x6719, "Radeon HD6950" },
+    { 0x1002, 0x671F, "Radeon HD6930" },
     { 0x1002, 0x6738, "Radeon HD6870" },
+    { 0x1002, 0x6739, "Radeon HD6850" },
     { 0x1002, 0x6778, "Radeon HD6450/HD7470" },
     { 0x1002, 0x6779, "Radeon HD6450" },
+    { 0x1002, 0x689C, "Radeon HD5970" },
+    { 0x1002, 0x6898, "Radeon HD5870" },
+    { 0x1002, 0x6899, "Radeon HD5850" },
+    { 0x1002, 0x689E, "Radeon HD5830" },
     { 0, 0, "Unknown"}
 };
 
@@ -159,7 +172,7 @@ typedef struct {
 } memtype_t;
 
 static memtype_t memtypes[] = {
-		{ 1, 0, "Samsung K4G20325FD" },
+    { 1, 0, "Samsung K4G20325FD" },
     { 3, 0, "Elpida EDW2032BBBG" },
     { 6, 2, "SK Hynix H5GQ2H24MFR" },
     { 6, 3, "SK Hynix H5GQ2H24AFR" },
@@ -426,8 +439,7 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  print(LOG_INFO, "AMDMemInfo by Zuikkis <zuikkis@gmail.com>\n"
-    "Updated for PiMP <www.getpimp.org> by ystarnaud <ystarnaud@gmail.com>\n");
+  print(LOG_INFO, "%s\n", VERSION);
 
 	pci = pci_alloc();
 	pci_init(pci);
