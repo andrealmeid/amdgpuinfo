@@ -50,6 +50,7 @@ bool opt_opencl_order = false; // --opencl / -o
 bool opt_output_short = false; // --short / -s
 bool opt_quiet = false;  // --quiet / -q to turn off
 bool opt_use_stderr = false;  // --use-stderr
+bool opt_show_memconfig = false; // --memconfig / -c
 
 // output function that only displays if verbose is on
 static void print(int priority, const char *fmt, ...)
@@ -75,6 +76,7 @@ static void showhelp(char *program)
   printf("%s\n\n"
     "Usage: %s [options]\n\n"
     "Options:\n"
+    "-c, --memconfig Output the memory configuration\n"
     "-h, --help      Help\n"
     "-o, --opencl    Order by OpenCL ID (cgminer/sgminer GPU order)\n"
     "-q, --quiet     Only output results\n"
@@ -100,6 +102,8 @@ static bool load_options(int argc, char *argv[])
       opt_output_short = true;
     } else if (!strcasecmp("--quiet", argv[i]) || !strcasecmp("-q", argv[i])) {
       opt_quiet = true;
+    } else if (!strcasecmp("--memconfig", argv[i]) || !strcasecmp("-c", argv[i])) {
+      opt_show_memconfig = true;
     } else if (!strcasecmp("--use-stderr", argv[i])) {
       opt_use_stderr = true;
     }
@@ -209,7 +213,7 @@ typedef struct gpu {
   u16 vendor_id, device_id;
   gputype_t *gpu;
   memtype_t *mem;
-  int mem_manufacturer, mem_model;
+  int memconfig, mem_manufacturer, mem_model;
   u8 pcibus, pcidev, pcifunc;
   int opencl_id;
   u32 subvendor, subdevice;
@@ -469,6 +473,7 @@ int main(int argc, char *argv[])
               manufacturer = (meminfo & 0xf00) >> 8;
               model = (meminfo & 0xf000) >> 12;
 
+              d->memconfig = meminfo;
               d->mem_manufacturer = manufacturer;
               d->mem_model = model;
               d->mem = find_mem(manufacturer, model);
@@ -521,6 +526,10 @@ int main(int argc, char *argv[])
         printf("Unknown GPU %04x-%04x:",d->vendor_id, d->device_id);
       }
 
+      if (opt_show_memconfig) {
+        printf("0x%x:", d->memconfig);
+      }
+
       if (d->mem && d->mem->manufacturer != 0) {
         printf("%s\n", d->mem->name);
       } else {
@@ -537,7 +546,12 @@ int main(int argc, char *argv[])
         d->gpu->vendor_id, d->gpu->device_id, d->gpu->name,
         d->pcibus, d->pcidev, d->pcifunc,
         d->opencl_id,
-        d->subvendor, d->subdevice);
+        d->subvendor, d->subdevice,
+        d->memconfig);
+
+      if (opt_show_memconfig) {
+        printf("Memory Configuration: 0x%x\n", d->memconfig);
+      }
 
       printf("Memory type: ");
 
