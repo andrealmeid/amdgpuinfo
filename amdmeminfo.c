@@ -124,6 +124,7 @@ typedef struct {
 static gputype_t gputypes[] = {
     { 0x1002, 0x67b1, "Radeon R9 290/R9 390" },
     { 0x1002, 0x67b0, "Radeon R9 290x/R9 390x" },
+    { 0x1002, 0x67b9, "Radeon R9 295x2" },
     { 0x1002, 0x6798, "Radeon HD7970/R9 280x" },
     { 0x1002, 0x679a, "Radeon HD7950/R9 280" },
     { 0x1002, 0x6939, "Radeon R9 285/R9 380" },
