@@ -182,6 +182,8 @@ static memtype_t memtypes[] = {
     { 3, 0, "Elpida EDW2032BBBG" },
     { 6, 2, "SK Hynix H5GQ2H24MFR" },
     { 6, 3, "SK Hynix H5GQ2H24AFR" },
+    { 6, 4, "SK Hynix H5GC2H24BFR" },
+    { 6, 5, "SK Hynix H5GQ4H24MFR" },
     { 6, 6, "SK Hynix H5GC4H24AJR" },
     { 6, 0, "Unknown Hynix" },
     { 0, 0, "Unknown" }
