@@ -1,6 +1,6 @@
 /*
  * AMDMemInfo, (c) 2014 by Zuikkis <zuikkis@gmail.com>
- * Adapted for PiMP (www.getpimp.org) by Yann St.Arnaud <ystarnaud@gmail.com>
+ * Updated by Yann St.Arnaud <ystarnaud@gmail.com>
  *
  * Loosely based on "amdmeminfo" by Joerie de Gram.
  *
@@ -143,6 +143,7 @@ static gputype_t gputypes[] = {
     { 0x1002, 0x67b0, 0x80, "Radeon R9 390x" },
     { 0x1002, 0x6939, 0xf1, "Radeon R9 380" },
     { 0x1002, 0x6938, 0, "Radeon R9 380x" },
+    { 0x1002, 0x6810, 0x81, "Radeon R7 370" },
     /* R9 2xx */
     { 0x1002, 0x67b1, 0, "Radeon R9 290/R9 390" },
     { 0x1002, 0x67b0, 0, "Radeon R9 290x/R9 390x" },
