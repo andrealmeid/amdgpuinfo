@@ -38,7 +38,7 @@
 #endif
 
 #define VERSION "AMDMemInfo by Zuikkis <zuikkis@gmail.com>\n" \
-      "Adapted for PiMP (www.getpimp.org) by Yann St.Arnaud <ystarnaud@gmail.com>"
+      "Updated by Yann St.Arnaud <ystarnaud@gmail.com>"
 
 #define LOG_INFO 1
 #define LOG_ERROR 2
@@ -116,56 +116,82 @@ static bool load_options(int argc, char *argv[])
  * GPU Types
  ***************************************************/
 typedef struct {
-  unsigned long vendor_id;
-  unsigned long device_id;
+  unsigned int vendor_id;
+  unsigned int device_id;
+  unsigned char rev_id;
   const char *name;
 } gputype_t;
 
 static gputype_t gputypes[] = {
-    { 0x1002, 0x7300, "Radeon R9 Fury/Nano/X"},
-    { 0x1002, 0x67df, "Radeon RX 470/480"},
-    { 0x1002, 0x67ef, "Radeon RX 460"},
-    { 0x1002, 0x67b1, "Radeon R9 290/R9 390" },
-    { 0x1002, 0x67b0, "Radeon R9 290x/R9 390x" },
-    { 0x1002, 0x6798, "Radeon HD7970/R9 280x" },
-    { 0x1002, 0x679a, "Radeon HD7950/R9 280" },
-    { 0x1002, 0x6939, "Radeon R9 285/R9 380" },
-    { 0x1002, 0x6938, "Radeon R9 380x" },
-    { 0x1002, 0x6811, "Radeon R9 270" },
-    { 0x1002, 0x6810, "Radeon R9 270x/R7 370" },
-    { 0x1002, 0x6658, "Radeon R7 260x" },
-    { 0x1002, 0x679b, "Radeon HD7990" },
-    { 0x1002, 0x679E, "Radeon HD7870XT" },
-    { 0x1002, 0x6818, "Radeon HD7870" },
-    { 0x1002, 0x6819, "Radeon HD7850" },
-    { 0x1002, 0x665C, "Radeon HD7790" },
-    { 0x1002, 0x671D, "Radeon HD6990" },
-    { 0x1002, 0x6718, "Radeon HD6970" },
-    { 0x1002, 0x6719, "Radeon HD6950" },
-    { 0x1002, 0x671F, "Radeon HD6930" },
-    { 0x1002, 0x6738, "Radeon HD6870" },
-    { 0x1002, 0x6739, "Radeon HD6850" },
-    { 0x1002, 0x6778, "Radeon HD6450/HD7470" },
-    { 0x1002, 0x6779, "Radeon HD6450" },
-    { 0x1002, 0x689C, "Radeon HD5970" },
-    { 0x1002, 0x6898, "Radeon HD5870" },
-    { 0x1002, 0x6899, "Radeon HD5850" },
-    { 0x1002, 0x689E, "Radeon HD5830" },
-    { 0, 0, "Unknown"}
+    /* Fury/Nano */
+    { 0x1002, 0x7300, 0, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0xc8, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0xc9, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0xca, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0xcb, "Radeon R9 Fury/Nano/X"},
+    /* RX 4xx */
+    { 0x1002, 0x67df, 0, "Radeon RX 470/480"},
+    { 0x1002, 0x67df, 0xc7, "Radeon RX 480"},
+    { 0x1002, 0x67df, 0xcf, "Radeon RX 470"},
+    { 0x1002, 0x67ef, 0, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0xc0, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0xc1, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0xc5, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0xcf, "Radeon RX 460"},
+    /* R9 3xx */
+    { 0x1002, 0x67b1, 0x80, "Radeon R9 390" },
+    { 0x1002, 0x67b0, 0x80, "Radeon R9 390x" },
+    { 0x1002, 0x6939, 0xf1, "Radeon R9 380" },
+    { 0x1002, 0x6938, 0, "Radeon R9 380x" },
+    /* R9 2xx */
+    { 0x1002, 0x67b1, 0, "Radeon R9 290/R9 390" },
+    { 0x1002, 0x67b0, 0, "Radeon R9 290x/R9 390x" },
+    { 0x1002, 0x6939, 0, "Radeon R9 285/R9 380" },
+    { 0x1002, 0x6811, 0, "Radeon R9 270" },
+    { 0x1002, 0x6810, 0, "Radeon R9 270x/R7 370" },
+    { 0x1002, 0x6658, 0, "Radeon R7 260x" },
+    /* HD 7xxx */
+    { 0x1002, 0x679b, 0, "Radeon HD7990" },
+    { 0x1002, 0x6798, 0, "Radeon HD7970/R9 280x" },
+    { 0x1002, 0x679a, 0, "Radeon HD7950/R9 280" },
+    { 0x1002, 0x679E, 0, "Radeon HD7870XT" },
+    { 0x1002, 0x6818, 0, "Radeon HD7870" },
+    { 0x1002, 0x6819, 0, "Radeon HD7850" },
+    { 0x1002, 0x665C, 0, "Radeon HD7790" },
+    /* HD 6xxx */
+    { 0x1002, 0x671D, 0, "Radeon HD6990" },
+    { 0x1002, 0x6718, 0, "Radeon HD6970" },
+    { 0x1002, 0x6719, 0, "Radeon HD6950" },
+    { 0x1002, 0x671F, 0, "Radeon HD6930" },
+    { 0x1002, 0x6738, 0, "Radeon HD6870" },
+    { 0x1002, 0x6739, 0, "Radeon HD6850" },
+    { 0x1002, 0x6778, 0, "Radeon HD6450/HD7470" },
+    { 0x1002, 0x6779, 0, "Radeon HD6450" },
+    /* HD 5xxx */
+    { 0x1002, 0x689C, 0, "Radeon HD5970" },
+    { 0x1002, 0x6898, 0, "Radeon HD5870" },
+    { 0x1002, 0x6899, 0, "Radeon HD5850" },
+    { 0x1002, 0x689E, 0, "Radeon HD5830" },
+    { 0, 0, 0, "Unknown"}
 };
 
 // find GPU type by vendor id/device id
-static gputype_t *find_gpu(unsigned long vendor_id, unsigned long device_id)
+static gputype_t *find_gpu(unsigned int vendor_id, unsigned int device_id, unsigned char rev_id)
 {
   gputype_t *g = gputypes;
 
   while (g->device_id)
   {
-    if (g->vendor_id == vendor_id && g->device_id == device_id) {
+    if (g->vendor_id == vendor_id && g->device_id == device_id && g->rev_id == rev_id) {
       return g;
     }
 
     ++g;
+  }
+
+  //if specific rev id not found, try again with 0 for general device type
+  if (rev_id > 0) {
+    return find_gpu(vendor_id, device_id, 0);
   }
 
   return NULL;
@@ -222,7 +248,7 @@ typedef struct gpu {
   gputype_t *gpu;
   memtype_t *mem;
   int memconfig, mem_manufacturer, mem_model;
-  u8 pcibus, pcidev, pcifunc;
+  u8 pcibus, pcidev, pcifunc, pcirev;
   int opencl_id;
   u32 subvendor, subdevice;
   struct gpu *prev, *next;
@@ -461,7 +487,6 @@ int main(int argc, char *argv[])
   {
     if (pcidev->device_class == PCI_CLASS_DISPLAY_VGA && pcidev->vendor_id == 0x1002) {
       if ((d = new_device()) != NULL) {
-        d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id);
         d->vendor_id = pcidev->vendor_id;
         d->device_id = pcidev->device_id;
         d->pcibus = pcidev->bus;
@@ -469,6 +494,11 @@ int main(int argc, char *argv[])
         d->pcifunc = pcidev->func;
         d->subvendor = pci_read_word(pcidev, PCI_SUBSYSTEM_VENDOR_ID);
         d->subdevice = pci_read_word(pcidev, PCI_SUBSYSTEM_ID);
+        d->pcirev = pci_read_byte(pcidev, PCI_REVISION_ID);
+
+       // printf("* Vendor: %04x, Device: %04x, Revision: %02x\n", pcidev->vendor_id, pcidev->device_id, d->pcirev);
+
+        d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id, d->pcirev);
 
         for (i=6;--i;)
         {
@@ -531,7 +561,7 @@ int main(int argc, char *argv[])
       if (d->gpu && d->gpu->vendor_id != 0) {
         printf("%s:", d->gpu->name);
       } else {
-        printf("Unknown GPU %04x-%04x:",d->vendor_id, d->device_id);
+        printf("Unknown GPU %04x-%04xr%02x:",d->vendor_id, d->device_id, d->pcirev);
       }
 
       if (opt_show_memconfig) {
@@ -545,28 +575,39 @@ int main(int argc, char *argv[])
       }
     // long form (original)
     } else {
-      printf(	"-----------------------------------\n"
-        "Found card: %04x:%04x (AMD %s)\n"
-        "PCI: %02x:%02x.%x\n"
-        "OpenCL ID: %d\n"
-        "Subvendor:  0x%x\n"
-        "Subdevice:  0x%x\n",
-        d->gpu->vendor_id, d->gpu->device_id, d->gpu->name,
-        d->pcibus, d->pcidev, d->pcifunc,
-        d->opencl_id,
-        d->subvendor, d->subdevice,
-        d->memconfig);
+      if (d->gpu) {
+        printf(	"-----------------------------------\n"
+          "Found card: %04x:%04x rev %02x (AMD %s)\n"
+          "PCI: %02x:%02x.%x\n"
+          "OpenCL ID: %d\n"
+          "Subvendor:  0x%x\n"
+          "Subdevice:  0x%x\n",
+          d->gpu->vendor_id, d->gpu->device_id, d->pcirev, d->gpu->name,
+          d->pcibus, d->pcidev, d->pcifunc,
+          d->opencl_id,
+          d->subvendor, d->subdevice);
 
-      if (opt_show_memconfig) {
-        printf("Memory Configuration: 0x%x\n", d->memconfig);
+        if (opt_show_memconfig) {
+          printf("Memory Configuration: 0x%x\n", d->memconfig);
+        }
+
+        printf("Memory type: ");
+
+        if (d->mem && d->mem->manufacturer != 0) {
+          printf("%s\n", d->mem->name);
+        } else {
+          printf("Unknown Memory - Mfr:%d Model:%d\n", d->mem_manufacturer, d->mem_model);
+        }
       }
-
-      printf("Memory type: ");
-
-      if (d->mem && d->mem->manufacturer != 0) {
-        printf("%s\n", d->mem->name);
-      } else {
-        printf("Unknown Memory - Mfr:%d Model:%d\n", d->mem_manufacturer, d->mem_model);
+      else {
+        printf(	"-----------------------------------\n"
+          "Unknown card: %04x:%04x rev %02x\n"
+          "PCI: %02x:%02x.%x\n"
+          "Subvendor:  0x%x\n"
+          "Subdevice:  0x%x\n",
+          d->vendor_id, d->device_id, d->pcirev,
+          d->pcibus, d->pcidev, d->pcifunc,
+          d->subvendor, d->subdevice);
       }
     }
 
