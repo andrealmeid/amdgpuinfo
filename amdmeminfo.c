@@ -208,36 +208,52 @@ typedef struct {
 } memtype_t;
 
 static memtype_t memtypes[] = {
-    { 1, 0, "Samsung K4G20325FD" },
-    { 3, 0, "Elpida EDW2032BBBG" },
-    { 6, 2, "SK Hynix H5GQ2H24MFR" },
-    { 6, 3, "SK Hynix H5GQ2H24AFR" },
-    { 6, 4, "SK Hynix H5GC2H24BFR" },
-    { 6, 5, "SK Hynix H5GQ4H24MFR" },
-    { 6, 6, "SK Hynix H5GC4H24AJR" },
-    { 6, 0, "Unknown Hynix" },
-    { 0, 0, "Unknown" }
+    { 0x1, -1, "Unknown Samsung" },
+    { 0x1, 0x0, "Samsung K4G20325FD" },
+    { 0x1, 0x2, "Samsung K4G80325FB" },
+    { 0x1, 0x6, "Samsung K4G20325FS" },
+    { 0x2, -1, "Unknown Infineon" },
+    { 0x3, -1, "Unknown Elpida" },
+    { 0x3, 0x0, "Elpida EDW4032BABG" },
+    { 0x3, 0x1, "Elpida EDW2032BBBG" },
+    { 0x4, -1, "Unknown Etron" },
+    { 0x5, -1, "Unknown Nanya" },
+    { 0x6, -1, "Unknown Hynix" },
+    { 0x6, 0x0, "SK Hynix H5VR2GCCM" },
+    { 0x6, 0x2, "SK Hynix H5GQ2H24MFR" },
+    { 0x6, 0x3, "SK Hynix H5GQ2H24AFR" },
+    { 0x6, 0x4, "SK Hynix H5GC2H24BFR" },
+    { 0x6, 0x5, "SK Hynix H5GQ4H24MFR" },
+    { 0x6, 0x6, "SK Hynix H5GC4H24AJR" },
+    { 0x7, -1, "Unknown Mosel" },
+    { 0x8, -1, "Unknown Winbond" },
+    { 0x9, -1, "Unknown ESMT" },
+    { 0xf, -1, "Unknown Micron" },
+    { 0x0, -1, "Unknown" }
 };
 
 // Find Memory Model by manufacturer/model
 static memtype_t *find_mem(int manufacturer, int model)
 {
-  memtype_t *m = memtypes, *last = NULL;
+  memtype_t *m = memtypes; //, *last = NULL;
 
   while (m->manufacturer)
   {
-    if (m->manufacturer == manufacturer)
-    {
-      last = m;
+    if (m->manufacturer == manufacturer && m->model == model) {
+      //last = m;
 
-      if (m->model == model)
-          return m;
+      //if (m->model == model)
+      return m;
     }
 
     ++m;
   }
 
-  return last;
+  if (model > -1) {
+    return find_mem(manufacturer, -1);
+  }
+
+  return NULL;
 }
 
 /**********************************************
