@@ -144,6 +144,7 @@ static gputype_t gputypes[] = {
     { 0x1002, 0x6939, 0xf1, "Radeon R9 380" },
     { 0x1002, 0x6938, 0, "Radeon R9 380x" },
     { 0x1002, 0x6810, 0x81, "Radeon R7 370" },
+    { 0x1002, 0x665f, 0x81, "Radeon R7 360" },
     /* R9 2xx */
     { 0x1002, 0x67b1, 0, "Radeon R9 290/R9 390" },
     { 0x1002, 0x67b0, 0, "Radeon R9 290x/R9 390x" },
@@ -720,7 +721,7 @@ int main(int argc, char *argv[])
           "OpenCL ID: %d\n"
           "Subvendor:  0x%04x\n"
           "Subdevice:  0x%04x\n"
-          "Path: %s\n",
+          "Sysfs Path: %s\n",
           d->gpu->vendor_id, d->gpu->device_id, d->pcirev, d->gpu->name,
           d->bios_version,
           d->pcibus, d->pcidev, d->pcifunc,
