@@ -252,6 +252,9 @@ typedef struct gpu {
   u8 pcibus, pcidev, pcifunc, pcirev;
   int opencl_id;
   u32 subvendor, subdevice;
+  char *path;
+  unsigned char *vbios;
+  char bios_version[64];
   struct gpu *prev, *next;
 } gpu_t;
 
@@ -270,6 +273,8 @@ static gpu_t *new_device()
   // default values
   d->gpu = NULL;
   d->mem = NULL;
+  d->vbios = NULL;
+  memset(d->bios_version, 0, 64);
   d->opencl_id = -1;
   d->next = d->prev = NULL;
 
@@ -293,6 +298,10 @@ static void free_devices()
   {
     d = last_device;
     last_device = d->prev;
+
+    if (d->vbios != NULL) {
+      free(d->vbios);
+    }
 
     free((void *)d);
   }
@@ -460,6 +469,97 @@ static int opencl_get_devices()
 }
 #endif
 
+
+/***********************************************
+ * VBIOS functions
+ ***********************************************/
+static size_t dump_vbios(gpu_t *gpu)
+{
+  size_t success = 0;
+  char obj[1024];
+  FILE *fp;
+  
+  sprintf(obj, "%s/rom", gpu->path);
+  
+  //unlock vbios
+  if ((fp = fopen(obj, "w")) == NULL) {
+    print(LOG_ERROR, "%02x:%02x.%x: Unable to unlock vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
+    return 0;
+  }
+  
+  fputs("1\n", fp);
+  fclose(fp);
+  
+  //if vbios buffer in use, free it
+  if (gpu->vbios != NULL) {
+    free(gpu->vbios);
+  }
+  
+  //allocate 64k for vbios - could be larger but for now only read 64k
+  if ((gpu->vbios = (unsigned char *)malloc(0x10000)) == NULL) {
+    print(LOG_ERROR, "%02x:%02x.%x: Unable to allocate memory for vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
+    goto relock;
+  }
+  
+  //read vbios into buffer
+  if ((fp = fopen(obj, "r")) == NULL) {
+    print(LOG_ERROR, "%02x:%02x.%x: Unable to read vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
+    free(gpu->vbios);
+    goto relock;
+  }
+  
+  success = fread(gpu->vbios, 0x10000, 1, fp);
+  fclose(fp);
+
+  //temp fix some gpus returned less than 64k...
+  success = 1;
+  
+relock:
+  //relock vbios
+  if ((fp = fopen(obj, "w")) == NULL) {
+    print(LOG_ERROR, "%02x:%02x.%x: Unable to relock vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
+    return 0;
+  }
+
+  fputs("0\n", fp);
+  fclose(fp);
+  
+  return success;
+}
+
+static u8 rbios8(u8 *vbios, long offset)
+{
+  return vbios[offset];
+}
+
+static u16 rbios16(u8 *vbios, long offset)
+{
+  return ((u16)vbios[offset] | (((u16)vbios[offset+1]) << 8));
+}
+
+static u32 rbios32(u8 *vbios, long offset)
+{
+  return ((u32)rbios16(vbios, offset) | (((u32)rbios16(vbios,offset+2)) << 16));
+}
+
+static void get_bios_version(gpu_t *gpu)
+{
+  char c, *p, *v;
+  u16 ver_offset = rbios16(gpu->vbios, 0x6e);
+  int len;
+  
+  p = (char *)(gpu->vbios+ver_offset);
+  v = gpu->bios_version;
+  len = 0;
+  
+  memset(v, 0, 64);
+  
+  while (((c = *(p++)) != 0) && len < 63) {
+    *(v++) = c;
+    ++len;
+  }
+}
+
 /*
  * Find all suitable cards, then find their memory space and get memory information.
  */
@@ -469,6 +569,7 @@ int main(int argc, char *argv[])
   struct pci_access *pci;
   struct pci_dev *pcidev;
   int i, meminfo, manufacturer, model;
+  char buf[1024];
   off_t base;
   int *pcimem;
   int fd;
@@ -483,6 +584,8 @@ int main(int argc, char *argv[])
   pci = pci_alloc();
   pci_init(pci);
   pci_scan_bus(pci);
+  
+  char *sysfs_path = pci_get_param(pci, "sysfs.path");
 
   for (pcidev = pci->devices; pcidev; pcidev = pcidev->next)
   {
@@ -497,9 +600,24 @@ int main(int argc, char *argv[])
         d->subdevice = pci_read_word(pcidev, PCI_SUBSYSTEM_ID);
         d->pcirev = pci_read_byte(pcidev, PCI_REVISION_ID);
 
+        memset(buf, 0, 1024);
+        sprintf(buf, "%s/devices/%04x:%02x:%02x.%d", sysfs_path, pcidev->domain, pcidev->bus, pcidev->dev, pcidev->func);
+        d->path = strdup(buf);
+        
+        //printf("%s\n", d->path);
+
        // printf("* Vendor: %04x, Device: %04x, Revision: %02x\n", pcidev->vendor_id, pcidev->device_id, d->pcirev);
 
         d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id, d->pcirev);
+        
+        if (dump_vbios(d)) {
+          /*printf("%02x.%02x.%x: vbios dump successful.\n", d->pcibus, d->pcidev, d->pcifunc);
+          printf("%x %x\n", d->vbios[0], d->vbios[1]);*/
+          get_bios_version(d);
+        }
+        /*else {
+          printf("%02x.%02x.%x: vbios dump failed.\n", d->pcibus, d->pcidev, d->pcifunc);
+        }*/
 
         for (i=6;--i;)
         {
@@ -565,6 +683,8 @@ int main(int argc, char *argv[])
         printf("Unknown GPU %04x-%04xr%02x:",d->vendor_id, d->device_id, d->pcirev);
       }
 
+      printf("%s:", d->bios_version);
+      
       if (opt_show_memconfig) {
         printf("0x%x:", d->memconfig);
       }
@@ -579,14 +699,18 @@ int main(int argc, char *argv[])
       if (d->gpu) {
         printf(	"-----------------------------------\n"
           "Found card: %04x:%04x rev %02x (AMD %s)\n"
+          "Bios Version: %s\n"
           "PCI: %02x:%02x.%x\n"
           "OpenCL ID: %d\n"
-          "Subvendor:  0x%x\n"
-          "Subdevice:  0x%x\n",
+          "Subvendor:  0x%04x\n"
+          "Subdevice:  0x%04x\n"
+          "Path: %s\n",
           d->gpu->vendor_id, d->gpu->device_id, d->pcirev, d->gpu->name,
+          d->bios_version,
           d->pcibus, d->pcidev, d->pcifunc,
           d->opencl_id,
-          d->subvendor, d->subdevice);
+          d->subvendor, d->subdevice,
+          d->path);
 
         if (opt_show_memconfig) {
           printf("Memory Configuration: 0x%x\n", d->memconfig);
@@ -604,8 +728,8 @@ int main(int argc, char *argv[])
         printf(	"-----------------------------------\n"
           "Unknown card: %04x:%04x rev %02x\n"
           "PCI: %02x:%02x.%x\n"
-          "Subvendor:  0x%x\n"
-          "Subdevice:  0x%x\n",
+          "Subvendor:  0x%04x\n"
+          "Subdevice:  0x%04x\n",
           d->vendor_id, d->device_id, d->pcirev,
           d->pcibus, d->pcidev, d->pcifunc,
           d->subvendor, d->subdevice);
