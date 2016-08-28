@@ -611,7 +611,7 @@ int main(int argc, char *argv[])
 
   for (pcidev = pci->devices; pcidev; pcidev = pcidev->next)
   {
-    if (pcidev->device_class == PCI_CLASS_DISPLAY_VGA && pcidev->vendor_id == 0x1002) {
+    if (((pcidev->device_class & 0xff00) >> 8) == PCI_BASE_CLASS_DISPLAY && pcidev->vendor_id == 0x1002) {
       if ((d = new_device()) != NULL) {
         d->vendor_id = pcidev->vendor_id;
         d->device_id = pcidev->device_id;
