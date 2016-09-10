@@ -151,6 +151,7 @@ static gputype_t gputypes[] = {
     { 0x1002, 0x6810, 0x81, "Radeon R7 370" },
     { 0x1002, 0x665f, 0x81, "Radeon R7 360" },
     /* R9 2xx */
+    { 0x1002, 0x67B9, 0, "Radeon R9 295x2" },
     { 0x1002, 0x67b1, 0, "Radeon R9 290/R9 390" },
     { 0x1002, 0x67b0, 0, "Radeon R9 290x/R9 390x" },
     { 0x1002, 0x6939, 0, "Radeon R9 285/R9 380" },
