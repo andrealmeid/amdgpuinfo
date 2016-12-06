@@ -217,6 +217,7 @@ typedef struct {
 static memtype_t memtypes[] = {
     { 0x1, -1, "Unknown Samsung" },
     { 0x1, 0x0, "Samsung K4G20325FD" },
+    { 0x1, 0x3, "Samsung K4G20325FD" },
     { 0x1, 0x2, "Samsung K4G80325FB" },
     { 0x1, 0x6, "Samsung K4G20325FS" },
     { 0x2, -1, "Unknown Infineon" },
