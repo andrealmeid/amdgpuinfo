@@ -236,8 +236,8 @@ static memtype_t memtypes[] = {
     { 0x7, -1, "Unknown Mosel" },
     { 0x8, -1, "Unknown Winbond" },
     { 0x9, -1, "Unknown ESMT" },
+    { 0xf, -1, "Unknown Micron" },
     { 0xf, 0x2, "Micron MT51J256M3" },
-    { 0xf, -1, "Unknown Micron" }, 
     { 0x0, -1, "Unknown" }
 };
 
