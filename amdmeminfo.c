@@ -1,6 +1,6 @@
 /*
  * AMDMemInfo, (c) 2014 by Zuikkis <zuikkis@gmail.com>
- * Adapted for PiMP (www.getpimp.org) by Yann St.Arnaud <ystarnaud@gmail.com>
+ * Updated by Yann St.Arnaud <ystarnaud@gmail.com>
  *
  * Loosely based on "amdmeminfo" by Joerie de Gram.
  *
@@ -38,7 +38,7 @@
 #endif
 
 #define VERSION "AMDMemInfo by Zuikkis <zuikkis@gmail.com>\n" \
-      "Adapted for PiMP (www.getpimp.org) by Yann St.Arnaud <ystarnaud@gmail.com>"
+      "Updated by Yann St.Arnaud <ystarnaud@gmail.com>"
 
 #define LOG_INFO 1
 #define LOG_ERROR 2
@@ -46,6 +46,7 @@
 /***********************************
  * Program Options
  ***********************************/
+bool opt_bios_only = false; // --biosonly / -b
 bool opt_opencl_order = false; // --opencl / -o
 bool opt_output_short = false; // --short / -s
 bool opt_quiet = false;  // --quiet / -q to turn off
@@ -76,11 +77,12 @@ static void showhelp(char *program)
   printf("%s\n\n"
     "Usage: %s [options]\n\n"
     "Options:\n"
+    "-b, --biosonly  Only output BIOS Versions (implies -s with <OpenCLID>:<BIOSVersion> output)\n"
     "-c, --memconfig Output the memory configuration\n"
     "-h, --help      Help\n"
     "-o, --opencl    Order by OpenCL ID (cgminer/sgminer GPU order)\n"
     "-q, --quiet     Only output results\n"
-    "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>\n"
+    "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
     "--use-stderr    Output errors to stderr\n"
     "\n", VERSION, program);
 }
@@ -98,6 +100,9 @@ static bool load_options(int argc, char *argv[])
       return false;
     } else if (!strcasecmp("--opencl", argv[i]) || !strcasecmp("-o", argv[i])) {
       opt_opencl_order = true;
+    } else if (!strcasecmp("--biosonly", argv[i]) || !strcasecmp("-b", argv[i])) {
+      opt_bios_only = true;
+      opt_output_short = true;
     } else if (!strcasecmp("--short", argv[i]) || !strcasecmp("-s", argv[i])) {
       opt_output_short = true;
     } else if (!strcasecmp("--quiet", argv[i]) || !strcasecmp("-q", argv[i])) {
@@ -116,54 +121,85 @@ static bool load_options(int argc, char *argv[])
  * GPU Types
  ***************************************************/
 typedef struct {
-  unsigned long vendor_id;
-  unsigned long device_id;
+  unsigned int vendor_id;
+  unsigned int device_id;
+  unsigned char rev_id;
   const char *name;
 } gputype_t;
 
 static gputype_t gputypes[] = {
-    { 0x1002, 0x67b1, "Radeon R9 290/R9 390" },
-    { 0x1002, 0x67b0, "Radeon R9 290x/R9 390x" },
-    { 0x1002, 0x67b9, "Radeon R9 295x2" },
-    { 0x1002, 0x6798, "Radeon HD7970/R9 280x" },
-    { 0x1002, 0x679a, "Radeon HD7950/R9 280" },
-    { 0x1002, 0x6939, "Radeon R9 285/R9 380" },
-    { 0x1002, 0x6938, "Radeon R9 380x" },
-    { 0x1002, 0x6811, "Radeon R9 270" },
-    { 0x1002, 0x6810, "Radeon R9 270x/R7 370" },
-    { 0x1002, 0x6658, "Radeon R7 260x" },
-    { 0x1002, 0x679b, "Radeon HD7990" },
-    { 0x1002, 0x679E, "Radeon HD7870XT" },
-    { 0x1002, 0x6818, "Radeon HD7870" },
-    { 0x1002, 0x6819, "Radeon HD7850" },
-    { 0x1002, 0x665C, "Radeon HD7790" },
-    { 0x1002, 0x671D, "Radeon HD6990" },
-    { 0x1002, 0x6718, "Radeon HD6970" },
-    { 0x1002, 0x6719, "Radeon HD6950" },
-    { 0x1002, 0x671F, "Radeon HD6930" },
-    { 0x1002, 0x6738, "Radeon HD6870" },
-    { 0x1002, 0x6739, "Radeon HD6850" },
-    { 0x1002, 0x6778, "Radeon HD6450/HD7470" },
-    { 0x1002, 0x6779, "Radeon HD6450" },
-    { 0x1002, 0x689C, "Radeon HD5970" },
-    { 0x1002, 0x6898, "Radeon HD5870" },
-    { 0x1002, 0x6899, "Radeon HD5850" },
-    { 0x1002, 0x689E, "Radeon HD5830" },
-    { 0, 0, "Unknown"}
+    /* Fury/Nano */
+    { 0x1002, 0x7300, 0, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0xc8, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0xc9, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0xca, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0xcb, "Radeon R9 Fury/Nano/X"},
+    /* RX 4xx */
+    { 0x1002, 0x67df, 0, "Radeon RX 470/480"},
+    { 0x1002, 0x67df, 0xc7, "Radeon RX 480"},
+    { 0x1002, 0x67df, 0xcf, "Radeon RX 470"},
+    { 0x1002, 0x67ef, 0, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0xc0, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0xc1, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0xc5, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0xcf, "Radeon RX 460"},
+    /* R9 3xx */
+    { 0x1002, 0x67b1, 0x80, "Radeon R9 390" },
+    { 0x1002, 0x67b0, 0x80, "Radeon R9 390x" },
+    { 0x1002, 0x6939, 0xf1, "Radeon R9 380" },
+    { 0x1002, 0x6938, 0, "Radeon R9 380x" },
+    { 0x1002, 0x6810, 0x81, "Radeon R7 370" },
+    { 0x1002, 0x665f, 0x81, "Radeon R7 360" },
+    /* R9 2xx */
+    { 0x1002, 0x67B9, 0, "Radeon R9 295x2" },
+    { 0x1002, 0x67b1, 0, "Radeon R9 290/R9 390" },
+    { 0x1002, 0x67b0, 0, "Radeon R9 290x/R9 390x" },
+    { 0x1002, 0x6939, 0, "Radeon R9 285/R9 380" },
+    { 0x1002, 0x6811, 0, "Radeon R9 270" },
+    { 0x1002, 0x6810, 0, "Radeon R9 270x/R7 370" },
+    { 0x1002, 0x6658, 0, "Radeon R7 260x" },
+    /* HD 7xxx */
+    { 0x1002, 0x679b, 0, "Radeon HD7990" },
+    { 0x1002, 0x6798, 0, "Radeon HD7970/R9 280x" },
+    { 0x1002, 0x679a, 0, "Radeon HD7950/R9 280" },
+    { 0x1002, 0x679E, 0, "Radeon HD7870XT" },
+    { 0x1002, 0x6818, 0, "Radeon HD7870" },
+    { 0x1002, 0x6819, 0, "Radeon HD7850" },
+    { 0x1002, 0x665C, 0, "Radeon HD7790" },
+    /* HD 6xxx */
+    { 0x1002, 0x671D, 0, "Radeon HD6990" },
+    { 0x1002, 0x6718, 0, "Radeon HD6970" },
+    { 0x1002, 0x6719, 0, "Radeon HD6950" },
+    { 0x1002, 0x671F, 0, "Radeon HD6930" },
+    { 0x1002, 0x6738, 0, "Radeon HD6870" },
+    { 0x1002, 0x6739, 0, "Radeon HD6850" },
+    { 0x1002, 0x6778, 0, "Radeon HD6450/HD7470" },
+    { 0x1002, 0x6779, 0, "Radeon HD6450" },
+    /* HD 5xxx */
+    { 0x1002, 0x689C, 0, "Radeon HD5970" },
+    { 0x1002, 0x6898, 0, "Radeon HD5870" },
+    { 0x1002, 0x6899, 0, "Radeon HD5850" },
+    { 0x1002, 0x689E, 0, "Radeon HD5830" },
+    { 0, 0, 0, "Unknown"}
 };
 
 // find GPU type by vendor id/device id
-static gputype_t *find_gpu(unsigned long vendor_id, unsigned long device_id)
+static gputype_t *find_gpu(unsigned int vendor_id, unsigned int device_id, unsigned char rev_id)
 {
   gputype_t *g = gputypes;
 
   while (g->device_id)
   {
-    if (g->vendor_id == vendor_id && g->device_id == device_id) {
+    if (g->vendor_id == vendor_id && g->device_id == device_id && g->rev_id == rev_id) {
       return g;
     }
 
     ++g;
+  }
+
+  //if specific rev id not found, try again with 0 for general device type
+  if (rev_id > 0) {
+    return find_gpu(vendor_id, device_id, 0);
   }
 
   return NULL;
@@ -179,35 +215,54 @@ typedef struct {
 } memtype_t;
 
 static memtype_t memtypes[] = {
-    { 1, 0, "Samsung K4G20325FD" },
-    { 3, 0, "Elpida EDW2032BBBG" },
-    { 6, 3, "SK Hynix H5GQ2H24AFR" },
-    { 6, 4, "SK Hynix H5GC2H24BFR" },
-    { 6, 5, "SK Hynix H5GQ4H24MFR" },
-    { 6, 6, "SK Hynix H5GC4H24AJR" },
-    { 6, 0, "Unknown Hynix" },
-    { 0, 0, "Unknown" }
+    { 0x1, -1, "Unknown Samsung" },
+    { 0x1, 0x0, "Samsung K4G20325FD" },
+    { 0x1, 0x3, "Samsung K4G20325FD" },
+    { 0x1, 0x2, "Samsung K4G80325FB" },
+    { 0x1, 0x6, "Samsung K4G20325FS" },
+    { 0x2, -1, "Unknown Infineon" },
+    { 0x3, -1, "Unknown Elpida" },
+    { 0x3, 0x0, "Elpida EDW4032BABG" },
+    { 0x3, 0x1, "Elpida EDW2032BBBG" },
+    { 0x4, -1, "Unknown Etron" },
+    { 0x5, -1, "Unknown Nanya" },
+    { 0x6, -1, "Unknown Hynix" },
+    { 0x6, 0x0, "SK Hynix H5VR2GCCM" },
+    { 0x6, 0x2, "SK Hynix H5GQ2H24MFR" },
+    { 0x6, 0x3, "SK Hynix H5GQ2H24AFR" },
+    { 0x6, 0x4, "SK Hynix H5GC2H24BFR" },
+    { 0x6, 0x5, "SK Hynix H5GQ4H24MFR" },
+    { 0x6, 0x6, "SK Hynix H5GC4H24AJR" },
+    { 0x7, -1, "Unknown Mosel" },
+    { 0x8, -1, "Unknown Winbond" },
+    { 0x9, -1, "Unknown ESMT" },
+    { 0xf, 0x2, "Micron MT51J256M3" },
+    { 0xf, -1, "Unknown Micron" }, 
+    { 0x0, -1, "Unknown" }
 };
 
 // Find Memory Model by manufacturer/model
 static memtype_t *find_mem(int manufacturer, int model)
 {
-  memtype_t *m = memtypes, *last = NULL;
+  memtype_t *m = memtypes; //, *last = NULL;
 
   while (m->manufacturer)
   {
-    if (m->manufacturer == manufacturer)
-    {
-      last = m;
+    if (m->manufacturer == manufacturer && m->model == model) {
+      //last = m;
 
-      if (m->model == model)
-          return m;
+      //if (m->model == model)
+      return m;
     }
 
     ++m;
   }
 
-  return last;
+  if (model > -1) {
+    return find_mem(manufacturer, -1);
+  }
+
+  return NULL;
 }
 
 /**********************************************
@@ -219,9 +274,12 @@ typedef struct gpu {
   gputype_t *gpu;
   memtype_t *mem;
   int memconfig, mem_manufacturer, mem_model;
-  u8 pcibus, pcidev, pcifunc;
+  u8 pcibus, pcidev, pcifunc, pcirev;
   int opencl_id;
   u32 subvendor, subdevice;
+  char *path;
+  unsigned char *vbios;
+  char bios_version[64];
   struct gpu *prev, *next;
 } gpu_t;
 
@@ -240,6 +298,8 @@ static gpu_t *new_device()
   // default values
   d->gpu = NULL;
   d->mem = NULL;
+  d->vbios = NULL;
+  memset(d->bios_version, 0, 64);
   d->opencl_id = -1;
   d->next = d->prev = NULL;
 
@@ -263,6 +323,10 @@ static void free_devices()
   {
     d = last_device;
     last_device = d->prev;
+
+    if (d->vbios != NULL) {
+      free(d->vbios);
+    }
 
     free((void *)d);
   }
@@ -430,6 +494,97 @@ static int opencl_get_devices()
 }
 #endif
 
+
+/***********************************************
+ * VBIOS functions
+ ***********************************************/
+static size_t dump_vbios(gpu_t *gpu)
+{
+  size_t success = 0;
+  char obj[1024];
+  FILE *fp;
+  
+  sprintf(obj, "%s/rom", gpu->path);
+  
+  //unlock vbios
+  if ((fp = fopen(obj, "w")) == NULL) {
+    print(LOG_ERROR, "%02x:%02x.%x: Unable to unlock vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
+    return 0;
+  }
+  
+  fputs("1\n", fp);
+  fclose(fp);
+  
+  //if vbios buffer in use, free it
+  if (gpu->vbios != NULL) {
+    free(gpu->vbios);
+  }
+  
+  //allocate 64k for vbios - could be larger but for now only read 64k
+  if ((gpu->vbios = (unsigned char *)malloc(0x10000)) == NULL) {
+    print(LOG_ERROR, "%02x:%02x.%x: Unable to allocate memory for vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
+    goto relock;
+  }
+  
+  //read vbios into buffer
+  if ((fp = fopen(obj, "r")) == NULL) {
+    print(LOG_ERROR, "%02x:%02x.%x: Unable to read vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
+    free(gpu->vbios);
+    goto relock;
+  }
+  
+  success = fread(gpu->vbios, 0x10000, 1, fp);
+  fclose(fp);
+
+  //temp fix some gpus returned less than 64k...
+  success = 1;
+  
+relock:
+  //relock vbios
+  if ((fp = fopen(obj, "w")) == NULL) {
+    print(LOG_ERROR, "%02x:%02x.%x: Unable to relock vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
+    return 0;
+  }
+
+  fputs("0\n", fp);
+  fclose(fp);
+  
+  return success;
+}
+
+static u8 rbios8(u8 *vbios, long offset)
+{
+  return vbios[offset];
+}
+
+static u16 rbios16(u8 *vbios, long offset)
+{
+  return ((u16)vbios[offset] | (((u16)vbios[offset+1]) << 8));
+}
+
+static u32 rbios32(u8 *vbios, long offset)
+{
+  return ((u32)rbios16(vbios, offset) | (((u32)rbios16(vbios,offset+2)) << 16));
+}
+
+static void get_bios_version(gpu_t *gpu)
+{
+  char c, *p, *v;
+  u16 ver_offset = rbios16(gpu->vbios, 0x6e);
+  int len;
+  
+  p = (char *)(gpu->vbios+ver_offset);
+  v = gpu->bios_version;
+  len = 0;
+  
+  memset(v, 0, 64);
+  
+  while (((c = *(p++)) != 0) && len < 63) {
+    *(v++) = c;
+    ++len;
+  }
+}
+
 /*
  * Find all suitable cards, then find their memory space and get memory information.
  */
@@ -439,6 +594,7 @@ int main(int argc, char *argv[])
   struct pci_access *pci;
   struct pci_dev *pcidev;
   int i, meminfo, manufacturer, model;
+  char buf[1024];
   off_t base;
   int *pcimem;
   int fd;
@@ -453,12 +609,13 @@ int main(int argc, char *argv[])
   pci = pci_alloc();
   pci_init(pci);
   pci_scan_bus(pci);
+  
+  char *sysfs_path = pci_get_param(pci, "sysfs.path");
 
   for (pcidev = pci->devices; pcidev; pcidev = pcidev->next)
   {
-    if (pcidev->device_class == PCI_CLASS_DISPLAY_VGA && pcidev->vendor_id == 0x1002) {
+    if (((pcidev->device_class & 0xff00) >> 8) == PCI_BASE_CLASS_DISPLAY && pcidev->vendor_id == 0x1002) {
       if ((d = new_device()) != NULL) {
-        d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id);
         d->vendor_id = pcidev->vendor_id;
         d->device_id = pcidev->device_id;
         d->pcibus = pcidev->bus;
@@ -466,6 +623,26 @@ int main(int argc, char *argv[])
         d->pcifunc = pcidev->func;
         d->subvendor = pci_read_word(pcidev, PCI_SUBSYSTEM_VENDOR_ID);
         d->subdevice = pci_read_word(pcidev, PCI_SUBSYSTEM_ID);
+        d->pcirev = pci_read_byte(pcidev, PCI_REVISION_ID);
+
+        memset(buf, 0, 1024);
+        sprintf(buf, "%s/devices/%04x:%02x:%02x.%d", sysfs_path, pcidev->domain, pcidev->bus, pcidev->dev, pcidev->func);
+        d->path = strdup(buf);
+        
+        //printf("%s\n", d->path);
+
+       // printf("* Vendor: %04x, Device: %04x, Revision: %02x\n", pcidev->vendor_id, pcidev->device_id, d->pcirev);
+
+        d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id, d->pcirev);
+        
+        if (dump_vbios(d)) {
+          /*printf("%02x.%02x.%x: vbios dump successful.\n", d->pcibus, d->pcidev, d->pcifunc);
+          printf("%x %x\n", d->vbios[0], d->vbios[1]);*/
+          get_bios_version(d);
+        }
+        /*else {
+          printf("%02x.%02x.%x: vbios dump failed.\n", d->pcibus, d->pcidev, d->pcifunc);
+        }*/
 
         for (i=6;--i;)
         {
@@ -523,47 +700,71 @@ int main(int argc, char *argv[])
         printf("GPU:");
       }
 
-      printf("%02x.%02x.%x:", d->pcibus, d->pcidev, d->pcifunc);
-
-      if (d->gpu && d->gpu->vendor_id != 0) {
-        printf("%s:", d->gpu->name);
-      } else {
-        printf("Unknown GPU %04x-%04x:",d->vendor_id, d->device_id);
+      //only output bios version
+      if (opt_bios_only) {
+        printf("%s\n", d->bios_version);
       }
+      //standard short form
+      else {
+        printf("%02x.%02x.%x:", d->pcibus, d->pcidev, d->pcifunc);
 
-      if (opt_show_memconfig) {
-        printf("0x%x:", d->memconfig);
-      }
+        if (d->gpu && d->gpu->vendor_id != 0) {
+          printf("%s:", d->gpu->name);
+        } else {
+          printf("Unknown GPU %04x-%04xr%02x:",d->vendor_id, d->device_id, d->pcirev);
+        }
 
-      if (d->mem && d->mem->manufacturer != 0) {
-        printf("%s\n", d->mem->name);
-      } else {
-        printf("Unknown Memory %d-%d\n", d->mem_manufacturer, d->mem_model);
+        printf("%s:", d->bios_version);
+        
+        if (opt_show_memconfig) {
+          printf("0x%x:", d->memconfig);
+        }
+
+        if (d->mem && d->mem->manufacturer != 0) {
+          printf("%s\n", d->mem->name);
+        } else {
+          printf("Unknown Memory %d-%d\n", d->mem_manufacturer, d->mem_model);
+        }
       }
     // long form (original)
     } else {
-      printf(	"-----------------------------------\n"
-        "Found card: %04x:%04x (AMD %s)\n"
-        "PCI: %02x:%02x.%x\n"
-        "OpenCL ID: %d\n"
-        "Subvendor:  0x%x\n"
-        "Subdevice:  0x%x\n",
-        d->gpu->vendor_id, d->gpu->device_id, d->gpu->name,
-        d->pcibus, d->pcidev, d->pcifunc,
-        d->opencl_id,
-        d->subvendor, d->subdevice,
-        d->memconfig);
+      if (d->gpu) {
+        printf(	"-----------------------------------\n"
+          "Found card: %04x:%04x rev %02x (AMD %s)\n"
+          "Bios Version: %s\n"
+          "PCI: %02x:%02x.%x\n"
+          "OpenCL ID: %d\n"
+          "Subvendor:  0x%04x\n"
+          "Subdevice:  0x%04x\n"
+          "Sysfs Path: %s\n",
+          d->gpu->vendor_id, d->gpu->device_id, d->pcirev, d->gpu->name,
+          d->bios_version,
+          d->pcibus, d->pcidev, d->pcifunc,
+          d->opencl_id,
+          d->subvendor, d->subdevice,
+          d->path);
 
-      if (opt_show_memconfig) {
-        printf("Memory Configuration: 0x%x\n", d->memconfig);
+        if (opt_show_memconfig) {
+          printf("Memory Configuration: 0x%x\n", d->memconfig);
+        }
+
+        printf("Memory type: ");
+
+        if (d->mem && d->mem->manufacturer != 0) {
+          printf("%s\n", d->mem->name);
+        } else {
+          printf("Unknown Memory - Mfr:%d Model:%d\n", d->mem_manufacturer, d->mem_model);
+        }
       }
-
-      printf("Memory type: ");
-
-      if (d->mem && d->mem->manufacturer != 0) {
-        printf("%s\n", d->mem->name);
-      } else {
-        printf("Unknown Memory - Mfr:%d Model:%d\n", d->mem_manufacturer, d->mem_model);
+      else {
+        printf(	"-----------------------------------\n"
+          "Unknown card: %04x:%04x rev %02x\n"
+          "PCI: %02x:%02x.%x\n"
+          "Subvendor:  0x%04x\n"
+          "Subdevice:  0x%04x\n",
+          d->vendor_id, d->device_id, d->pcirev,
+          d->pcibus, d->pcidev, d->pcifunc,
+          d->subvendor, d->subdevice);
       }
     }
 
