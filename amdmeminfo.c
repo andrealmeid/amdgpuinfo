@@ -239,6 +239,7 @@ static memtype_t memtypes[] = {
     { 0x1, 0x3, "Samsung K4G20325FD" },
     { 0x1, 0x2, "Samsung K4G80325FB" },
     { 0x1, 0x6, "Samsung K4G20325FS" },
+    { 0x1, 0x9, "Samsung K4G41325FE" },
     { 0x2, -1, "Unknown Infineon" },
     { 0x3, -1, "Unknown Elpida" },
     { 0x3, 0x0, "Elpida EDW4032BABG" },
@@ -256,7 +257,7 @@ static memtype_t memtypes[] = {
     { 0x8, -1, "Unknown Winbond" },
     { 0x9, -1, "Unknown ESMT" },
     { 0xf, -1, "Unknown Micron" },
-    { 0xf, 0x2, "Micron MT51J256M3" },
+    { 0xf, 0xf, "Micron MT51J256M3" },
     { 0x0, -1, "Unknown" }
 };
 
