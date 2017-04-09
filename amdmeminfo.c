@@ -234,7 +234,16 @@ typedef struct {
   int model;
   const char *name;
 } memtype_t;
-
+/* Memory type information can be determined by using amdmeminfo -c, output will lookg something like the following
+      Memory Configuration: 0x50600ff2
+      in this case, the correct line for this card would be:
+      { 0xf, 0x0, "Micron MT51J256M3" },
+      as the determination is made by stripping the last two characters, and swapping the last two of the remaining characters,
+      in this case this leads to 0x50600f of which 0f the important part for our purposes, and once swapped looks like: 0xf, 0x0
+      The actual memory type name can be gathered from physical inspection of the card, or from using bios modification tools
+      that are able to extract the memory name from the bios rom.  For bios which have more than one type, physical inspection
+      or verification with something like gpu-z will be necessary.
+*/
 static memtype_t memtypes[] = {
     { 0x1, -1, "Unknown Samsung" },
     { 0x1, 0x0, "Samsung K4G20325FD" },
