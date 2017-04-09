@@ -128,6 +128,8 @@ typedef struct {
 } gputype_t;
 
 static gputype_t gputypes[] = {
+    /* Vega */
+    { 0x1002, 0x687f, 0, "Radeon RX Vega"},
     /* Fury/Nano */
     { 0x1002, 0x7300, 0, "Radeon R9 Fury/Nano/X"},
     { 0x1002, 0x7300, 0xc8, "Radeon R9 Fury/Nano/X"},
