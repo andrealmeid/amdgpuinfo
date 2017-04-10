@@ -123,86 +123,105 @@ static bool load_options(int argc, char *argv[])
 typedef struct {
   unsigned int vendor_id;
   unsigned int device_id;
+  unsigned long subsys_id;
   unsigned char rev_id;
   const char *name;
 } gputype_t;
 
 static gputype_t gputypes[] = {
     /* Fury/Nano */
-    { 0x1002, 0x7300, 0, "Radeon R9 Fury/Nano/X"},
-    { 0x1002, 0x7300, 0xc8, "Radeon R9 Fury/Nano/X"},
-    { 0x1002, 0x7300, 0xc9, "Radeon R9 Fury/Nano/X"},
-    { 0x1002, 0x7300, 0xca, "Radeon R9 Fury/Nano/X"},
-    { 0x1002, 0x7300, 0xcb, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0xc8, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0xc9, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0xca, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0xcb, "Radeon R9 Fury/Nano/X"},
     /* RX 4xx */
-    { 0x1002, 0x67df, 0, "Radeon RX 470/480"},
-    { 0x1002, 0x67df, 0xc7, "Radeon RX 480"},
-    { 0x1002, 0x67df, 0xcf, "Radeon RX 470"},
-    { 0x1002, 0x67ef, 0, "Radeon RX 460"},
-    { 0x1002, 0x67ef, 0xc0, "Radeon RX 460"},
-    { 0x1002, 0x67ef, 0xc1, "Radeon RX 460"},
-    { 0x1002, 0x67ef, 0xc5, "Radeon RX 460"},
-    { 0x1002, 0x67ef, 0xcf, "Radeon RX 460"},
+    { 0x1002, 0x67df, 0, 0, "Radeon RX 470/480"},
+    { 0x1002, 0x67df, 0, 0xc7, "Radeon RX 480"},
+    { 0x1002, 0x67df, 0, 0xcf, "Radeon RX 470"},
+    { 0x1002, 0x67ef, 0, 0, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0, 0xc0, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0, 0xc1, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0, 0xc5, "Radeon RX 460"},
+    { 0x1002, 0x67ef, 0, 0xcf, "Radeon RX 460"},
     /* R9 3xx */
-    { 0x1002, 0x67b1, 0x80, "Radeon R9 390" },
-    { 0x1002, 0x67b0, 0x80, "Radeon R9 390x" },
-    { 0x1002, 0x6939, 0xf1, "Radeon R9 380" },
-    { 0x1002, 0x6938, 0, "Radeon R9 380x" },
-    { 0x1002, 0x6810, 0x81, "Radeon R7 370" },
-    { 0x1002, 0x665f, 0x81, "Radeon R7 360" },
+    { 0x1002, 0x67b1, 0, 0x80, "Radeon R9 390" },
+    { 0x1002, 0x67b0, 0, 0x80, "Radeon R9 390x" },
+    { 0x1002, 0x6939, 0, 0xf1, "Radeon R9 380" },
+    { 0x1002, 0x6938, 0, 0, "Radeon R9 380x" },
+    { 0x1002, 0x6810, 0, 0x81, "Radeon R7 370" },
+    { 0x1002, 0x665f, 0, 0x81, "Radeon R7 360" },
     /* R9 2xx */
-    { 0x1002, 0x67B9, 0, "Radeon R9 295x2" },
-    { 0x1002, 0x67b1, 0, "Radeon R9 290/R9 390" },
-    { 0x1002, 0x67b0, 0, "Radeon R9 290x/R9 390x" },
-    { 0x1002, 0x6939, 0, "Radeon R9 285/R9 380" },
-    { 0x1002, 0x6811, 0, "Radeon R9 270" },
-    { 0x1002, 0x6810, 0, "Radeon R9 270x/R7 370" },
-    { 0x1002, 0x6658, 0, "Radeon R7 260x" },
+    { 0x1002, 0x67B9, 0, 0, "Radeon R9 295x2" },
+    { 0x1002, 0x67b1, 0, 0, "Radeon R9 290/R9 390" },
+    { 0x1002, 0x67b0, 0, 0, "Radeon R9 290x/R9 390x" },
+    { 0x1002, 0x6939, 0, 0, "Radeon R9 285/R9 380" },
+    { 0x1002, 0x6811, 0, 0, "Radeon R9 270" },
+    { 0x1002, 0x6810, 0, 0, "Radeon R9 270x/R7 370" },
+    { 0x1002, 0x6658, 0, 0, "Radeon R7 260x" },
     /* HD 7xxx */
-    { 0x1002, 0x679b, 0, "Radeon HD7990" },
-    { 0x1002, 0x6798, 0, "Radeon HD7970/R9 280x" },
-    { 0x1002, 0x679a, 0, "Radeon HD7950/R9 280" },
-    { 0x1002, 0x679E, 0, "Radeon HD7870XT" },
-    { 0x1002, 0x6818, 0, "Radeon HD7870" },
-    { 0x1002, 0x6819, 0, "Radeon HD7850" },
-    { 0x1002, 0x665C, 0, "Radeon HD7790" },
+    { 0x1002, 0x679b, 0, 0, "Radeon HD7990" },
+    { 0x1002, 0x6798, 0, 0, "Radeon HD7970/R9 280x" },
+    { 0x1002, 0x679a, 0, 0, "Radeon HD7950/R9 280" },
+    { 0x1002, 0x679E, 0, 0, "Radeon HD7870XT" },
+    { 0x1002, 0x6818, 0, 0, "Radeon HD7870" },
+    { 0x1002, 0x6819, 0, 0, "Radeon HD7850" },
+    { 0x1002, 0x665C, 0, 0, "Radeon HD7790" },
     /* HD 6xxx */
-    { 0x1002, 0x671D, 0, "Radeon HD6990" },
-    { 0x1002, 0x6718, 0, "Radeon HD6970" },
-    { 0x1002, 0x6719, 0, "Radeon HD6950" },
-    { 0x1002, 0x671F, 0, "Radeon HD6930" },
-    { 0x1002, 0x6738, 0, "Radeon HD6870" },
-    { 0x1002, 0x6739, 0, "Radeon HD6850" },
-    { 0x1002, 0x6778, 0, "Radeon HD6450/HD7470" },
-    { 0x1002, 0x6779, 0, "Radeon HD6450" },
+    { 0x1002, 0x671D, 0, 0, "Radeon HD6990" },
+    { 0x1002, 0x6718, 0, 0, "Radeon HD6970" },
+    { 0x1002, 0x6719, 0, 0, "Radeon HD6950" },
+    { 0x1002, 0x671F, 0, 0, "Radeon HD6930" },
+    { 0x1002, 0x6738, 0, 0, "Radeon HD6870" },
+    { 0x1002, 0x6739, 0, 0, "Radeon HD6850" },
+    { 0x1002, 0x6778, 0, 0, "Radeon HD6450/HD7470" },
+    { 0x1002, 0x6779, 0, 0, "Radeon HD6450" },
     /* HD 5xxx */
-    { 0x1002, 0x689C, 0, "Radeon HD5970" },
-    { 0x1002, 0x6898, 0, "Radeon HD5870" },
-    { 0x1002, 0x6899, 0, "Radeon HD5850" },
-    { 0x1002, 0x689E, 0, "Radeon HD5830" },
-    { 0, 0, 0, "Unknown"}
+    { 0x1002, 0x689C, 0, 0, "Radeon HD5970" },
+    { 0x1002, 0x6898, 0, 0, "Radeon HD5870" },
+    { 0x1002, 0x6899, 0, 0, "Radeon HD5850" },
+    { 0x1002, 0x689E, 0, 0, "Radeon HD5830" },
+    { 0, 0, 0, 0, "Unknown"}
 };
 
 // find GPU type by vendor id/device id
-static gputype_t *find_gpu(unsigned int vendor_id, unsigned int device_id, unsigned char rev_id)
+static gputype_t *_find_gpu(unsigned int vendor_id, unsigned int device_id, unsigned long subsys_id, unsigned char rev_id)
 {
   gputype_t *g = gputypes;
 
   while (g->device_id)
   {
-    if (g->vendor_id == vendor_id && g->device_id == device_id && g->rev_id == rev_id) {
+    if (g->vendor_id == vendor_id && g->device_id == device_id && g->subsys_id == subsys_id && g->rev_id == rev_id) {
       return g;
     }
 
     ++g;
   }
 
+  return NULL;
+}
+
+// find GPU type by vendor id/device id
+static gputype_t *find_gpu(unsigned int vendor_id, unsigned int device_id, unsigned long subsys_id, unsigned char rev_id)
+{
+  gputype_t *g = _find_gpu(vendor_id, device_id, subsys_id, rev_id);
+      
+  //if specific subsys id not found, try again with 0
+  if (g == NULL && subsys_id > 0) {
+    g = _find_gpu(vendor_id, device_id, 0, rev_id);
+  }
+      
   //if specific rev id not found, try again with 0 for general device type
-  if (rev_id > 0) {
-    return find_gpu(vendor_id, device_id, 0);
+  if (g == NULL && rev_id > 0) {
+    g = _find_gpu(vendor_id, device_id, subsys_id, 0);
   }
 
-  return NULL;
+  //if still not found, try no rev id or subsys id
+  if (g == NULL) {
+    g = _find_gpu(vendor_id, device_id, 0, 0);
+  }
+      
+  return g;
 }
 
 /*************************************************
@@ -633,7 +652,7 @@ int main(int argc, char *argv[])
 
        // printf("* Vendor: %04x, Device: %04x, Revision: %02x\n", pcidev->vendor_id, pcidev->device_id, d->pcirev);
 
-        d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id, d->pcirev);
+        d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id, pcidev->subdevice, d->pcirev);
         
         if (dump_vbios(d)) {
           /*printf("%02x.%02x.%x: vbios dump successful.\n", d->pcibus, d->pcidev, d->pcifunc);
