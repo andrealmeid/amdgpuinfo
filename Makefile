@@ -4,6 +4,8 @@ CC=gcc
 CFLAGS=-O3
 LDFLAGS=-lpci -lOpenCL
 
+all: amdmeminfo
+
 amdmeminfo: amdmeminfo.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -I$(AMDAPPSDK_PATH)/include -L$(AMDAPPSDK_PATH)/lib/$(AMDAPPSDK_ARCH)
 
