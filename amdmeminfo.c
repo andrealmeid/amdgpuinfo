@@ -652,7 +652,7 @@ int main(int argc, char *argv[])
 
        // printf("* Vendor: %04x, Device: %04x, Revision: %02x\n", pcidev->vendor_id, pcidev->device_id, d->pcirev);
 
-        d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id, pcidev->subdevice, d->pcirev);
+        d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id, d->subdevice, d->pcirev);
         
         if (dump_vbios(d)) {
           /*printf("%02x.%02x.%x: vbios dump successful.\n", d->pcibus, d->pcidev, d->pcifunc);
