@@ -129,12 +129,17 @@ typedef struct {
 } gputype_t;
 
 static gputype_t gputypes[] = {
+    /* Vega */
+    { 0x1002, 0x687f, 0, 0, "Radeon RX Vega"},
     /* Fury/Nano */
     { 0x1002, 0x7300, 0, 0, "Radeon R9 Fury/Nano/X"},
     { 0x1002, 0x7300, 0, 0xc8, "Radeon R9 Fury/Nano/X"},
     { 0x1002, 0x7300, 0, 0xc9, "Radeon R9 Fury/Nano/X"},
     { 0x1002, 0x7300, 0, 0xca, "Radeon R9 Fury/Nano/X"},
     { 0x1002, 0x7300, 0, 0xcb, "Radeon R9 Fury/Nano/X"},
+    /* RX 5xx */
+    { 0x1002, 0x67df, 0, 0xe7, "Radeon RX 580"},
+    { 0x1002, 0x67df, 0, 0xef, "Radeon RX 570"},
     /* RX 4xx */
     { 0x1002, 0x67df, 0, 0, "Radeon RX 470/480"},
     { 0x1002, 0x67df, 0, 0xc7, "Radeon RX 480"},
@@ -232,13 +237,23 @@ typedef struct {
   int model;
   const char *name;
 } memtype_t;
-
+/* Memory type information can be determined by using amdmeminfo -c, output will look something like the following
+ *     Memory Configuration: 0x50600ff2
+ *    in this case, the correct line for this card would be:
+ *     { 0xf, 0x0, "Micron MT51J256M3" },
+ *     as the determination is made by stripping the last two characters, and swapping the last two of the remaining characters,
+ *     in this case this leads to 0x50600f of which 0f the important part for our purposes, and once swapped looks like: 0xf, 0x0
+ *     The actual memory type name can be gathered from physical inspection of the card, or from using bios modification tools
+ *     that are able to extract the memory name from the bios rom.  For bios which have more than one type, physical inspection
+ *     or verification with something like gpu-z will be necessary.
+ */
 static memtype_t memtypes[] = {
     { 0x1, -1, "Unknown Samsung" },
     { 0x1, 0x0, "Samsung K4G20325FD" },
     { 0x1, 0x3, "Samsung K4G20325FD" },
     { 0x1, 0x2, "Samsung K4G80325FB" },
     { 0x1, 0x6, "Samsung K4G20325FS" },
+    { 0x1, 0x9, "Samsung K4G41325FE" },
     { 0x2, -1, "Unknown Infineon" },
     { 0x3, -1, "Unknown Elpida" },
     { 0x3, 0x0, "Elpida EDW4032BABG" },
@@ -256,7 +271,7 @@ static memtype_t memtypes[] = {
     { 0x8, -1, "Unknown Winbond" },
     { 0x9, -1, "Unknown ESMT" },
     { 0xf, -1, "Unknown Micron" },
-    { 0xf, 0x2, "Micron MT51J256M3" },
+    { 0xf, 0x0, "Micron MT51J256M3" },
     { 0x0, -1, "Unknown" }
 };
 
