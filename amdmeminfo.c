@@ -132,14 +132,14 @@ static gputype_t gputypes[] = {
     /* Vega */
     { 0x1002, 0x687f, 0, "Radeon RX Vega"},
     /* Fury/Nano */
-    { 0x1002, 0x7300, 0, "Radeon R9 Fury/Nano/X"},
-    { 0x1002, 0x7300, 0xc8, "Radeon R9 Fury/Nano/X"},
-    { 0x1002, 0x7300, 0xc9, "Radeon R9 Fury/Nano/X"},
-    { 0x1002, 0x7300, 0xca, "Radeon R9 Fury/Nano/X"},
-    { 0x1002, 0x7300, 0xcb, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0xc8, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0xc9, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0xca, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0xcb, "Radeon R9 Fury/Nano/X"},
     /* RX 5xx */
-    { 0x1002, 0x67df, 0xe7, "Radeon RX 580"},
-    { 0x1002, 0x67df, 0xef, "Radeon RX 570"},
+    { 0x1002, 0x67df, 0, 0xe7, "Radeon RX 580"},
+    { 0x1002, 0x67df, 0, 0xef, "Radeon RX 570"},
     /* RX 4xx */
     { 0x1002, 0x67df, 0, 0, "Radeon RX 470/480"},
     { 0x1002, 0x67df, 0, 0xc7, "Radeon RX 480"},
