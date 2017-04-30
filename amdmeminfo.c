@@ -722,9 +722,14 @@ int main(int argc, char *argv[])
 
   //display info
   d = device_list;
-
+  #define EMPTYBIOS "xxx-xxx-xxxx"
   while (d)
   {
+        if(d->bios_version[0] == 0){
+           memcpy(d->bios_version, EMPTYBIOS, strlen(EMPTYBIOS));
+           d->bios_version[strlen(EMPTYBIOS)] = 0x00;
+        }
+
     // short form
     if (opt_output_short) {
 
