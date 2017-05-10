@@ -43,6 +43,8 @@
 #define LOG_INFO 1
 #define LOG_ERROR 2
 
+#define BLANK_BIOS_VER "xxx-xxx-xxxx"
+
 /***********************************
  * Program Options
  ***********************************/
@@ -140,6 +142,7 @@ static gputype_t gputypes[] = {
     /* RX 5xx */
     { 0x1002, 0x67df, 0, 0xe7, "Radeon RX 580"},
     { 0x1002, 0x67df, 0, 0xef, "Radeon RX 570"},
+    { 0x1002, 0x699f, 0, 0xc7, "Radeon RX 550"},
     /* RX 4xx */
     { 0x1002, 0x67df, 0, 0, "Radeon RX 470/480"},
     { 0x1002, 0x67df, 0, 0xc7, "Radeon RX 480"},
@@ -722,9 +725,13 @@ int main(int argc, char *argv[])
 
   //display info
   d = device_list;
-
   while (d)
   {
+    //if bios version is blank, replace it with BLANK_BIOS_VER
+    if (d->bios_version[0] == 0) {
+      strcpy(d->bios_version, BLANK_BIOS_VER);
+    }
+        
     // short form
     if (opt_output_short) {
 
