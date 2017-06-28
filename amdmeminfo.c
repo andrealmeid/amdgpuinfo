@@ -142,6 +142,7 @@ static gputype_t gputypes[] = {
     /* RX 5xx */
     { 0x1002, 0x67df, 0, 0xe7, "Radeon RX 580"},
     { 0x1002, 0x67df, 0, 0xef, "Radeon RX 570"},
+    { 0x1002, 0x67ff, 0, 0xcf, "Radeon RX 560"},
     { 0x1002, 0x699f, 0, 0xc7, "Radeon RX 550"},
     /* RX 4xx */
     { 0x1002, 0x67df, 0, 0, "Radeon RX 470/480"},
