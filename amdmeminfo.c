@@ -140,7 +140,7 @@ static gputype_t gputypes[] = {
     { 0x1002, 0x7300, 0, 0xc8, "Radeon R9 Fury/Nano/X"},
     { 0x1002, 0x7300, 0, 0xc9, "Radeon R9 Fury/Nano/X"},
     { 0x1002, 0x7300, 0, 0xca, "Radeon R9 Fury/Nano/X"},
-    { 0x1002, 0x7300, 0, 0xcb, "Radeon R9 Fury/Nano/X"},
+    { 0x1002, 0x7300, 0, 0xcb, "Radeon R9 Fury"},
     /* RX 5xx */
     { 0x1002, 0x67df, 0, 0xe7, "Radeon RX 580"},
     { 0x1002, 0x67df, 0, 0xef, "Radeon RX 570"},
