@@ -270,6 +270,7 @@ static memtype_t memtypes[] = {
     { 0x6, 0x4, "SK Hynix H5GC2H24BFR" },
     { 0x6, 0x5, "SK Hynix H5GQ4H24MFR" },
     { 0x6, 0x6, "SK Hynix H5GC4H24AJR" },
+    { 0x6, 0x7, "SK Hynix H5GQ8H24MJR" },
     { 0x7, -1, "Unknown Mosel" },
     { 0x8, -1, "Unknown Winbond" },
     { 0x9, -1, "Unknown ESMT" },
