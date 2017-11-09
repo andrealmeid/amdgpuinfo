@@ -875,8 +875,8 @@ int main(int argc, char *argv[])
       if (d->gpu) {
         printf(	"-----------------------------------\n"
           "Found Card: %04x:%04x rev %02x (AMD %s)\n"
-          "Chip Family: %s\n"
-          "Bios Version: %s\n"
+          "Chip Type: %s\n"
+          "BIOS Version: %s\n"
           "PCI: %02x:%02x.%x\n"
           "OpenCL ID: %d\n"
           "Subvendor:  0x%04x\n"
