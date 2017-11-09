@@ -865,10 +865,14 @@ int main(int argc, char *argv[])
         }
 
         if (d->mem && d->mem->manufacturer != 0) {
-          printf("%s\n", d->mem->name);
+          printf("%s:%s:", d->mem->name, mem_type_label[d->mem->type]);
         } else {
-          printf("Unknown Memory %d-%d\n", d->mem_manufacturer, d->mem_model);
+          printf("Unknown Memory %d-%d:%s:", d->mem_manufacturer, d->mem_model, mem_type_label[0]);
         }
+
+        printf("%s", amd_asic_name[d->gpu->asic_type]);
+
+        printf("\n");
       }
     // long form (original)
     } else {
