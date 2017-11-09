@@ -380,7 +380,7 @@ static memtype_t *find_mem(int mem_type, int manufacturer, int model)
 
   while (m->manufacturer)
   {
-    if (m->mem_type == mem_type && m->manufacturer == manufacturer && m->model == model) {
+    if (m->type == mem_type && m->manufacturer == manufacturer && m->model == model) {
       //last = m;
 
       //if (m->model == model)
@@ -405,7 +405,7 @@ typedef struct gpu {
   u16 vendor_id, device_id;
   gputype_t *gpu;
   memtype_t *mem;
-  int memconfig, mem_manufacturer, mem_model;
+  int memconfig, mem_type, mem_manufacturer, mem_model;
   u8 pcibus, pcidev, pcifunc, pcirev;
   int opencl_id;
   u32 subvendor, subdevice;
@@ -883,7 +883,7 @@ int main(int argc, char *argv[])
           "Subdevice:  0x%04x\n"
           "Sysfs Path: %s\n",
           d->gpu->vendor_id, d->gpu->device_id, d->pcirev, d->gpu->name,
-          amd_asic_name[d->asic_type], d->bios_version,
+          amd_asic_name[d->gpu->asic_type], d->bios_version,
           d->pcibus, d->pcidev, d->pcifunc,
           d->opencl_id,
           d->subvendor, d->subdevice,
