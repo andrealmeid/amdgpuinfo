@@ -1,16 +1,39 @@
+
+#AMD driver settings
 AMDAPPSDK_PATH=/opt/AMDAPP
 AMDAPPSDK_ARCH=x86
-CC=gcc
-CFLAGS=-O3
-LDFLAGS=-lpci -lOpenCL
 
-all: amdmeminfo
+PROGRAM_NAME := amdmeminfo
 
-amdmeminfo: amdmeminfo.c
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -I$(AMDAPPSDK_PATH)/include -L$(AMDAPPSDK_PATH)/lib/$(AMDAPPSDK_ARCH)
+SRC := $(wildcard *.c)
+OBJS := ${SRC:.c=.o}
 
-amdmeminfo-ethos: amdmeminfo.c
-	$(CC) $(CFLAGS) -o amdmeminfo $^ $(LDFLAGS) -L/opt/driver-switching/fglrx/runtime-lib
+INCLUDE_DIRS := $(AMDAPPSDK_PATH)/include
+LIBRARY_DIRS := $(AMDAPPSDK_PATH)/lib/$(AMDAPPSDK_ARCH)
+LIBRARIES := pci OpenCL
 
+#check if this is an ethos distribution... if so add the correct directory for fglrx
+ifneq ("$(wildcard /opt/ethos/etc/version)","")
+LIBRARY_DIRS += /opt/driver-switching/fglrx/runtime-lib
+endif
+
+#compiler settings
+CC := gcc
+CFLAGS := -O3
+
+CFLAGS += $(foreach incdir,$(INCLUDE_DIRS),-I$(incdir))
+LDFLAGS += $(foreach librarydir,$(LIBRARY_DIRS),-L$(librarydir))
+LDFLAGS += $(foreach library,$(LIBRARIES),-l$(library))
+
+.PHONY: all clean distclean
+
+all: $(PROGRAM_NAME)
+
+$(PROGRAM_NAME): $(OBJS)
+	$(CC) $(CFLAGS) $(OBJS) -o $(PROGRAM_NAME) $(LDFLAGS)
+	
 clean:
-	rm -f amdmeminfo *.o
+	@- $(RM) $(PROGRAM_NAME)
+	@- $(RM) $(OBJS)	
+
+distclean: clean
