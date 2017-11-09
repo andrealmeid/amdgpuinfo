@@ -684,20 +684,9 @@ relock:
   return success;
 }
 
-static u8 rbios8(u8 *vbios, long offset)
-{
-  return vbios[offset];
-}
-
-static u16 rbios16(u8 *vbios, long offset)
-{
-  return ((u16)vbios[offset] | (((u16)vbios[offset+1]) << 8));
-}
-
-static u32 rbios32(u8 *vbios, long offset)
-{
-  return ((u32)rbios16(vbios, offset) | (((u32)rbios16(vbios,offset+2)) << 16));
-}
+#define rbios8(vbios, offset) *((u8 *)(vbios)+(offset)) 
+#define rbios16(vbios, offset) *((u16 *)((vbios)+(offset))) 
+#define rbios32(vbios, offset) *((u32 *)((vbios)+(offset)))
 
 static void get_bios_version(gpu_t *gpu)
 {
