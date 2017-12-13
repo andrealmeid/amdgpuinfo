@@ -694,11 +694,16 @@ static void get_bios_version(gpu_t *gpu)
   u16 ver_offset = rbios16(gpu->vbios, 0x6e);
   int len;
   
-  p = (char *)(gpu->vbios+ver_offset);
   v = gpu->bios_version;
-  len = 0;
-  
   memset(v, 0, 64);
+
+  //check for invalid vbios
+  if (*((u16 *)gpu->vbios) != 0xaa55) {
+    return;
+  }
+      
+  p = (char *)(gpu->vbios+ver_offset);
+  len = 0;
   
   while (((c = *(p++)) != 0) && len < 63) {
     *(v++) = c;
