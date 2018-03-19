@@ -28,6 +28,7 @@
 #include <stdbool.h>
 #include <errno.h>
 #include <stdarg.h>
+#include <regex.h>
 
 #ifdef __APPLE_CC__
 #include <OpenCL/opencl.h>
@@ -737,10 +738,31 @@ int main(int argc, char *argv[])
   pci_scan_bus(pci);
   
   char *sysfs_path = pci_get_param(pci, "sysfs.path");
+  bool is_apu;
+  regex_t regex;
 
   for (pcidev = pci->devices; pcidev; pcidev = pcidev->next)
   {
     if (((pcidev->device_class & 0xff00) >> 8) == PCI_BASE_CLASS_DISPLAY && pcidev->vendor_id == 0x1002) {
+      is_apu = false;
+
+      //check for APU
+      memset(buf, 0, 1024);
+      if (pci_lookup_name(pci, buf, sizeof(buf), PCI_LOOKUP_DEVICE, pcidev->vendor_id, pcidev->device_id) != NULL) {
+        if (regcomp(&regex, "(Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven)", REG_ICASE | REG_EXTENDED) == 0) {
+          if (regexec(&regex, buf, 0, NULL, 0) == 0) {
+            is_apu = true;
+          }
+        }
+
+        regfree(&regex);
+      }
+
+      //skip APUs
+      if (is_apu) {
+        continue;
+      }
+
       if ((d = new_device()) != NULL) {
         d->vendor_id = pcidev->vendor_id;
         d->device_id = pcidev->device_id;
