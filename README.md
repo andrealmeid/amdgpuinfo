@@ -7,7 +7,7 @@ Get GDDR5 memory information and other information from AMD Radeon GPUs.
 
 ### Installation
 
-* Download and unzip or git clone: `git clone https://github.com/sling00/amdmeminfo`
+* Download and unzip or git clone: `git clone https://github.com/ystarnaud/amdmeminfo`
 * `cd amdmeminfo`
 * Edit `Makefile` to specify AMDAPPSDK path or install OpenCL library: `sudo apt-get install ocl-icd-opencl-dev `
 * Install Linux PCI utilities: `sudo apt-get install libpci-dev`
