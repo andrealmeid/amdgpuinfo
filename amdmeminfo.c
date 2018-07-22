@@ -360,6 +360,7 @@ static memtype_t memtypes[] = {
     { MEM_GDDR5, 0x8, -1, "Unknown Winbond GDDR5" },
     { MEM_GDDR5, 0x9, -1, "Unknown ESMT GDDR5" },
     { MEM_GDDR5, 0xf, -1, "Unknown Micron" },
+    { MEM_GDDR5, 0xf, 0x1, "Micron MT51J256M32" },
     { MEM_GDDR5, 0xf, 0x0, "Micron MT51J256M3" },
     { MEM_GDDR5, 0x0, -1, "Unknown GDDR5" },
 
