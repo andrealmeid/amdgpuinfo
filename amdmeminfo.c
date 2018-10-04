@@ -230,6 +230,7 @@ static gputype_t gputypes[] = {
     { 0x1002, 0x67df, 0, 0xe7, "Radeon RX 580", CHIP_POLARIS10},
     { 0x1002, 0x67df, 0, 0xef, "Radeon RX 570", CHIP_POLARIS10},
     { 0x1002, 0x67ff, 0, 0xcf, "Radeon RX 560", CHIP_POLARIS11},
+    { 0x1002, 0x67ef, 0, 0xe5, "Radeon RX 560", CHIP_POLARIS11},  /* known also as RX560D with CU 14/shaders 896 */
     { 0x1002, 0x67ff, 0, 0xff, "Radeon RX 550", CHIP_POLARIS11},  /* new RX550 with 640 shaders */
     { 0x1002, 0x699f, 0, 0xc7, "Radeon RX 550", CHIP_POLARIS12},
     /* RX 4xx */
