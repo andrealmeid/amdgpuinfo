@@ -79,7 +79,11 @@ typedef enum AMD_CHIPS {
   CHIP_POLARIS10,
   CHIP_POLARIS11,
   CHIP_POLARIS12,
+  CHIP_POLARIS20,
+  CHIP_POLARIS30,
   CHIP_VEGA10,
+  CHIP_VEGA20,
+  CHIP_NAVI10,
   CHIP_RAVEN,
 } asic_type_t;
 
@@ -90,6 +94,7 @@ static const char *mem_type_label[] = {
   "DDR3",
   "DDR4",
   "GDDR5",
+  "GDDR6",
   "HBM",
 };
 
@@ -119,7 +124,11 @@ static const char *amd_asic_name[] = {
   "Polaris10",
   "Polaris11",
   "Polaris12",
+  "Polaris20",
+  "Polaris30",
   "Vega10",
+  "Vega20",
+  "Navi10",
   "Raven",
 };
 
@@ -220,6 +229,14 @@ static gputype_t gputypes[] = {
     { 0x1002, 0x687f, 0, 0xc1, "Radeon RX Vega 64", CHIP_VEGA10},
     { 0x1002, 0x687f, 0, 0xc3, "Radeon RX Vega 56", CHIP_VEGA10},
     { 0x1002, 0x6863, 0, 0, "Radeon Vega Frontier Edition", CHIP_VEGA10},
+    /*Vega20*/
+    { 0x1002, 0x66af, 0, 0, "Radeon VII", CHIP_VEGA20},
+    { 0x1002, 0x66af, 0, 0xc4, "Radeon VII", CHIP_VEGA20},
+
+    /*Navi10*/
+    { 0x1002, 0x731f, 0, 0, "Radeon RX 5700", CHIP_NAVI10},
+    { 0x1002, 0x731f, 0, 0xc1, "Radeon RX 5700", CHIP_NAVI10},
+    
     /* Fury/Nano */
     { 0x1002, 0x7300, 0, 0, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
     { 0x1002, 0x7300, 0, 0xc8, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
@@ -229,6 +246,10 @@ static gputype_t gputypes[] = {
     /* RX 5xx */
     { 0x1002, 0x67df, 0, 0xe7, "Radeon RX 580", CHIP_POLARIS10},
     { 0x1002, 0x67df, 0, 0xef, "Radeon RX 570", CHIP_POLARIS10},
+
+    { 0x1002, 0x67df, 0, 0xe1, "Radeon RX 590", CHIP_POLARIS30},   /* AMD Radeon RX 590 */
+    { 0x1002, 0x6fdf, 0, 0xef, "Radeon RX 580", CHIP_POLARIS20},   /* AMD Radeon RX 580 2048SP */
+    
     { 0x1002, 0x67ff, 0, 0xcf, "Radeon RX 560", CHIP_POLARIS11},
     { 0x1002, 0x67ef, 0, 0xe5, "Radeon RX 560", CHIP_POLARIS11},  /* known also as RX560D with CU 14/shaders 896 */
     { 0x1002, 0x67ff, 0, 0xff, "Radeon RX 550", CHIP_POLARIS11},  /* new RX550 with 640 shaders */
