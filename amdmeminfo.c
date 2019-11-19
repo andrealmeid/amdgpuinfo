@@ -224,21 +224,23 @@ typedef struct {
 
 static gputype_t gputypes[] = {
     /* Vega */
-    { 0x1002, 0x687f, 0, 0, "Radeon RX Vega", CHIP_VEGA10},
+    { 0x1002, 0x687f, 0, 0,    "Radeon RX Vega", CHIP_VEGA10},
     { 0x1002, 0x687f, 0, 0xc0, "Radeon RX Vega 64", CHIP_VEGA10},
     { 0x1002, 0x687f, 0, 0xc1, "Radeon RX Vega 64", CHIP_VEGA10},
     { 0x1002, 0x687f, 0, 0xc3, "Radeon RX Vega 56", CHIP_VEGA10},
-    { 0x1002, 0x6863, 0, 0, "Radeon Vega Frontier Edition", CHIP_VEGA10},
+    { 0x1002, 0x6863, 0, 0,    "Radeon Vega FE", CHIP_VEGA10},
     /*Vega20*/
-    { 0x1002, 0x66af, 0, 0, "Radeon VII", CHIP_VEGA20},
+    { 0x1002, 0x66af, 0, 0,    "Radeon VII", CHIP_VEGA20},
     { 0x1002, 0x66af, 0, 0xc4, "Radeon VII", CHIP_VEGA20},
 
     /*Navi10*/
-    { 0x1002, 0x731f, 0, 0, "Radeon RX 5700", CHIP_NAVI10},
-    { 0x1002, 0x731f, 0, 0xc1, "Radeon RX 5700", CHIP_NAVI10},
+    { 0x1002, 0x731f, 0, 0,    "Radeon RX 5700",    CHIP_NAVI10},
+    { 0x1002, 0x731f, 0, 0xc0, "Radeon RX 5700 XT", CHIP_NAVI10}, /* XTX or 50th Anniversary Edition */
+    { 0x1002, 0x731f, 0, 0xc1, "Radeon RX 5700 XT", CHIP_NAVI10},
+    { 0x1002, 0x731f, 0, 0xc4, "Radeon RX 5700",    CHIP_NAVI10},
     
     /* Fury/Nano */
-    { 0x1002, 0x7300, 0, 0, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
+    { 0x1002, 0x7300, 0, 0,    "Radeon R9 Fury/Nano/X", CHIP_FIJI},
     { 0x1002, 0x7300, 0, 0xc8, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
     { 0x1002, 0x7300, 0, 0xc9, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
     { 0x1002, 0x7300, 0, 0xca, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
