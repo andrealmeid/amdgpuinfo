@@ -84,6 +84,8 @@ typedef enum AMD_CHIPS {
   CHIP_VEGA10,
   CHIP_VEGA20,
   CHIP_NAVI10,
+  CHIP_NAVI12,
+  CHIP_NAVI14,
   CHIP_RAVEN,
 } asic_type_t;
 
@@ -129,6 +131,8 @@ static const char *amd_asic_name[] = {
   "Vega10",
   "Vega20",
   "Navi10",
+  "Navi12",
+  "Navi14",
   "Raven",
 };
 
@@ -229,6 +233,7 @@ static gputype_t gputypes[] = {
     { 0x1002, 0x687f, 0, 0xc1, "Radeon RX Vega 64", CHIP_VEGA10},
     { 0x1002, 0x687f, 0, 0xc3, "Radeon RX Vega 56", CHIP_VEGA10},
     { 0x1002, 0x6863, 0, 0,    "Radeon Vega FE", CHIP_VEGA10},
+
     /*Vega20*/
     { 0x1002, 0x66af, 0, 0,    "Radeon VII", CHIP_VEGA20},
     { 0x1002, 0x66af, 0, 0xc4, "Radeon VII", CHIP_VEGA20},
@@ -238,6 +243,11 @@ static gputype_t gputypes[] = {
     { 0x1002, 0x731f, 0, 0xc0, "Radeon RX 5700 XT", CHIP_NAVI10}, /* XTX or 50th Anniversary Edition */
     { 0x1002, 0x731f, 0, 0xc1, "Radeon RX 5700 XT", CHIP_NAVI10},
     { 0x1002, 0x731f, 0, 0xc4, "Radeon RX 5700",    CHIP_NAVI10},
+    { 0x1002, 0x731f, 0, 0xca, "Radeon RX 5600 XT", CHIP_NAVI10},
+
+    /*Navi14*/
+    { 0x1002, 0x7340, 0, 0,    "Radeon RX 5500",    CHIP_NAVI14},
+    { 0x1002, 0x7340, 0, 0xc5, "Radeon RX 5500 XT", CHIP_NAVI14},
     
     /* Fury/Nano */
     { 0x1002, 0x7300, 0, 0,    "Radeon R9 Fury/Nano/X", CHIP_FIJI},
