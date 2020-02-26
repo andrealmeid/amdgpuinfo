@@ -394,6 +394,7 @@ static memtype_t memtypes[] = {
     { MEM_GDDR5, 0x6, 0x5, "SK Hynix H5GQ4H24MFR" },
     { MEM_GDDR5, 0x6, 0x6, "SK Hynix H5GC4H24AJR" },
     { MEM_GDDR5, 0x6, 0x7, "SK Hynix H5GQ8H24MJR" },
+    { MEM_GDDR5, 0x6, 0x8, "SK Hynix H5GC8H24AJR" },
     { MEM_GDDR5, 0x7, -1, "Unknown Mosel GDDR5" },
     { MEM_GDDR5, 0x8, -1, "Unknown Winbond GDDR5" },
     { MEM_GDDR5, 0x9, -1, "Unknown ESMT GDDR5" },
