@@ -47,6 +47,7 @@
 #define MEM_UNKNOWN 0x0
 #define MEM_GDDR5 0x5
 #define MEM_HBM  0x6
+#define MEM_GDDR6 0x7
 
 #define mmMC_SEQ_MISC0 0xa80
 #define mmMC_SEQ_MISC0_FIJI 0xa71
@@ -239,15 +240,27 @@ static gputype_t gputypes[] = {
     { 0x1002, 0x66af, 0, 0xc4, "Radeon VII", CHIP_VEGA20},
 
     /*Navi10*/
-    { 0x1002, 0x731f, 0, 0,    "Radeon RX 5700",    CHIP_NAVI10},
+    { 0x1002, 0x7310, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
+    { 0x1002, 0x7312, 0, 0,    "Radeon Pro W5700", CHIP_NAVI10},
+    { 0x1002, 0x7318, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
+    { 0x1002, 0x7319, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
+    { 0x1002, 0x731a, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
+    { 0x1002, 0x731b, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
+    { 0x1002, 0x731f, 0, 0,    "Radeon RX 5600/5700", CHIP_NAVI10},
     { 0x1002, 0x731f, 0, 0xc0, "Radeon RX 5700 XT", CHIP_NAVI10}, /* XTX or 50th Anniversary Edition */
     { 0x1002, 0x731f, 0, 0xc1, "Radeon RX 5700 XT", CHIP_NAVI10},
     { 0x1002, 0x731f, 0, 0xc4, "Radeon RX 5700",    CHIP_NAVI10},
     { 0x1002, 0x731f, 0, 0xca, "Radeon RX 5600 XT", CHIP_NAVI10},
+    /* Navi12 */
+    { 0x1002, 0x7360, 0, 0, "Radeon Navi 12", CHIP_NAVI12},
+    { 0x1002, 0x7362, 0, 0, "Radeon Navi 12", CHIP_NAVI12},
 
     /*Navi14*/
     { 0x1002, 0x7340, 0, 0,    "Radeon RX 5500",    CHIP_NAVI14},
     { 0x1002, 0x7340, 0, 0xc5, "Radeon RX 5500 XT", CHIP_NAVI14},
+    { 0x1002, 0x7341, 0, 0, "Radeon Pro W5500", CHIP_NAVI14},
+    { 0x1002, 0x7347, 0, 0, "Radeon Pro W5500M", CHIP_NAVI14},
+    { 0x1002, 0x734f, 0, 0, "Radeon Pro W5500M", CHIP_NAVI14},
     
     /* Fury/Nano */
     { 0x1002, 0x7300, 0, 0,    "Radeon R9 Fury/Nano/X", CHIP_FIJI},
@@ -415,10 +428,19 @@ static memtype_t memtypes[] = {
     { MEM_HBM, 0x8, -1, "Unknown Winbond HBM" },
     { MEM_HBM, 0x9, -1, "Unknown ESMT HBM" },
     { MEM_HBM, 0xf, -1, "Unknown Micron HBM" },
+    
+    /* GDDR6 */
+    { MEM_GDDR6, 0x1, -1, "Samsung GDDR6"},
+    { MEM_GDDR6, 0x1, 0x8, "Samsung K4Z80325BC"},
+    { MEM_GDDR6, 0x6, -1, "Hynix GDDR6"},
+    { MEM_GDDR6, 0xf, -1, "Micron GDDR6"},
+    { MEM_GDDR6, 0xf, 0x0, "Micron MT61K256M32"},
 
-    { MEM_GDDR5, 0x0, -1, "Unknown GDDR5" },
-    { MEM_HBM, 0x0, -1, "Unknown HBM" },
-    { MEM_UNKNOWN, 0x0, -1, "Unknown Memory" },
+    /* UNKNOWN LAST */
+    { MEM_GDDR5, -1, -1, "GDDR5"},
+    { MEM_GDDR6, -1, -1, "GDDR6"},
+    { MEM_HBM, -1, -1, "Unknown HBM"},
+    { MEM_UNKNOWN, -1, -1, "Unknown Memory"},
 };
 
 
@@ -856,7 +878,8 @@ int main(int argc, char *argv[])
         }*/
 
         //currenty Vega GPUs do not have a memory configuration register to read
-        if (d->gpu->asic_type == CHIP_VEGA10) {
+	  if ((d->gpu->asic_type == CHIP_VEGA10) ||
+            (d->gpu->asic_type == CHIP_VEGA20)) {
           d->memconfig = 0x61000000;
           d->mem_type = MEM_HBM;
           d->mem_manufacturer = 1;
