@@ -502,10 +502,13 @@ static gpu_t *new_device()
   d->gpu = NULL;
   d->mem = NULL;
   d->vbios = NULL;
+  d->path = NULL;
   memset(d->bios_version, 0, 64);
   d->opencl_platform = -1;
   d->opencl_id = -1;
   d->next = d->prev = NULL;
+  d->mem_manufacturer = 0;
+  d->mem_model = 0;
 
   if (device_list == NULL && last_device == NULL) {
     device_list = last_device = d;
@@ -530,6 +533,10 @@ static void free_devices()
 
     if (d->vbios != NULL) {
       free(d->vbios);
+    }
+
+    if (d->path != NULL) {
+      free(d->path);
     }
 
     free((void *)d);
