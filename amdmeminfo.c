@@ -261,7 +261,7 @@ static gputype_t gputypes[] = {
     { 0x1002, 0x7341, 0, 0, "Radeon Pro W5500", CHIP_NAVI14},
     { 0x1002, 0x7347, 0, 0, "Radeon Pro W5500M", CHIP_NAVI14},
     { 0x1002, 0x734f, 0, 0, "Radeon Pro W5500M", CHIP_NAVI14},
-    
+
     /* Fury/Nano */
     { 0x1002, 0x7300, 0, 0,    "Radeon R9 Fury/Nano/X", CHIP_FIJI},
     { 0x1002, 0x7300, 0, 0xc8, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
@@ -274,7 +274,7 @@ static gputype_t gputypes[] = {
 
     { 0x1002, 0x67df, 0, 0xe1, "Radeon RX 590", CHIP_POLARIS30},   /* AMD Radeon RX 590 */
     { 0x1002, 0x6fdf, 0, 0xef, "Radeon RX 580", CHIP_POLARIS20},   /* AMD Radeon RX 580 2048SP */
-    
+
     { 0x1002, 0x67ff, 0, 0xcf, "Radeon RX 560", CHIP_POLARIS11},
     { 0x1002, 0x67ef, 0, 0xe5, "Radeon RX 560", CHIP_POLARIS11},  /* known also as RX560D with CU 14/shaders 896 */
     { 0x1002, 0x67ff, 0, 0xff, "Radeon RX 550", CHIP_POLARIS11},  /* new RX550 with 640 shaders */
@@ -349,12 +349,12 @@ static gputype_t *_find_gpu(unsigned int vendor_id, unsigned int device_id, unsi
 static gputype_t *find_gpu(unsigned int vendor_id, unsigned int device_id, unsigned long subsys_id, unsigned char rev_id)
 {
   gputype_t *g = _find_gpu(vendor_id, device_id, subsys_id, rev_id);
-      
+
   //if specific subsys id not found, try again with 0
   if (g == NULL && subsys_id > 0) {
     g = _find_gpu(vendor_id, device_id, 0, rev_id);
   }
-      
+
   //if specific rev id not found, try again with 0 for general device type
   if (g == NULL && rev_id > 0) {
     g = _find_gpu(vendor_id, device_id, subsys_id, 0);
@@ -364,7 +364,7 @@ static gputype_t *find_gpu(unsigned int vendor_id, unsigned int device_id, unsig
   if (g == NULL) {
     g = _find_gpu(vendor_id, device_id, 0, 0);
   }
-      
+
   return g;
 }
 
@@ -379,7 +379,7 @@ typedef struct {
 } memtype_t;
 
 
-/* 
+/*
  * Memory type information can be determined by using "amdmeminfo -c". This will output the MC scratch register value.
  * The format of the MC scratch register is: 0xTXXXMVXX where T = Memory Type, V = Vendor ID and M is Memory Model ID
  *
@@ -428,7 +428,7 @@ static memtype_t memtypes[] = {
     { MEM_HBM, 0x8, -1, "Unknown Winbond HBM" },
     { MEM_HBM, 0x9, -1, "Unknown ESMT HBM" },
     { MEM_HBM, 0xf, -1, "Unknown Micron HBM" },
-    
+
     /* GDDR6 */
     { MEM_GDDR6, 0x1, -1, "Samsung GDDR6"},
     { MEM_GDDR6, 0x1, 0x8, "Samsung K4Z80325BC"},
@@ -721,42 +721,42 @@ static size_t dump_vbios(gpu_t *gpu)
   size_t success = 0;
   char obj[1024];
   FILE *fp;
-  
+
   sprintf(obj, "%s/rom", gpu->path);
-  
+
   //unlock vbios
   if ((fp = fopen(obj, "w")) == NULL) {
     print(LOG_ERROR, "%02x:%02x.%x: Unable to unlock vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
     return 0;
   }
-  
+
   fputs("1\n", fp);
   fclose(fp);
-  
+
   //if vbios buffer in use, free it
   if (gpu->vbios != NULL) {
     free(gpu->vbios);
   }
-  
+
   //allocate 64k for vbios - could be larger but for now only read 64k
   if ((gpu->vbios = (unsigned char *)malloc(0x10000)) == NULL) {
     print(LOG_ERROR, "%02x:%02x.%x: Unable to allocate memory for vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
     goto relock;
   }
-  
+
   //read vbios into buffer
   if ((fp = fopen(obj, "r")) == NULL) {
     print(LOG_ERROR, "%02x:%02x.%x: Unable to read vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
     free(gpu->vbios);
     goto relock;
   }
-  
+
   success = fread(gpu->vbios, 0x10000, 1, fp);
   fclose(fp);
 
   //temp fix some gpus returned less than 64k...
   success = 1;
-  
+
 relock:
   //relock vbios
   if ((fp = fopen(obj, "w")) == NULL) {
@@ -766,12 +766,12 @@ relock:
 
   fputs("0\n", fp);
   fclose(fp);
-  
+
   return success;
 }
 
-#define rbios8(vbios, offset) *((u8 *)(vbios)+(offset)) 
-#define rbios16(vbios, offset) *((u16 *)((vbios)+(offset))) 
+#define rbios8(vbios, offset) *((u8 *)(vbios)+(offset))
+#define rbios16(vbios, offset) *((u16 *)((vbios)+(offset)))
 #define rbios32(vbios, offset) *((u32 *)((vbios)+(offset)))
 
 static void get_bios_version(gpu_t *gpu)
@@ -779,7 +779,7 @@ static void get_bios_version(gpu_t *gpu)
   char c, *p, *v;
   u16 ver_offset = rbios16(gpu->vbios, 0x6e);
   int len;
-  
+
   v = gpu->bios_version;
   memset(v, 0, 64);
 
@@ -787,10 +787,10 @@ static void get_bios_version(gpu_t *gpu)
   if (*((u16 *)gpu->vbios) != 0xaa55) {
     return;
   }
-      
+
   p = (char *)(gpu->vbios+ver_offset);
   len = 0;
-  
+
   while (((c = *(p++)) != 0) && len < 63) {
     *(v++) = c;
     ++len;
@@ -821,7 +821,7 @@ int main(int argc, char *argv[])
   pci = pci_alloc();
   pci_init(pci);
   pci_scan_bus(pci);
-  
+
   char *sysfs_path = pci_get_param(pci, "sysfs.path");
   bool is_apu;
   regex_t regex;
@@ -861,13 +861,13 @@ int main(int argc, char *argv[])
         memset(buf, 0, 1024);
         sprintf(buf, "%s/devices/%04x:%02x:%02x.%d", sysfs_path, pcidev->domain, pcidev->bus, pcidev->dev, pcidev->func);
         d->path = strdup(buf);
-        
+
         //printf("%s\n", d->path);
 
        // printf("* Vendor: %04x, Device: %04x, Revision: %02x\n", pcidev->vendor_id, pcidev->device_id, d->pcirev);
 
         d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id, d->subdevice, d->pcirev);
-        
+
         if (dump_vbios(d)) {
           /*printf("%02x.%02x.%x: vbios dump successful.\n", d->pcibus, d->pcidev, d->pcifunc);
           printf("%x %x\n", d->vbios[0], d->vbios[1]);*/
@@ -948,7 +948,7 @@ int main(int argc, char *argv[])
     if (d->bios_version[0] == 0) {
       strcpy(d->bios_version, BLANK_BIOS_VER);
     }
-        
+
     // short form
     if (opt_output_short) {
 
@@ -973,7 +973,7 @@ int main(int argc, char *argv[])
         }
 
         printf("%s:", d->bios_version);
-        
+
         if (opt_show_memconfig) {
           printf("0x%x:", d->memconfig);
         }
