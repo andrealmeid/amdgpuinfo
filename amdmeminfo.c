@@ -51,6 +51,8 @@
 #define mmMC_SEQ_MISC0 0xa80
 #define mmMC_SEQ_MISC0_FIJI 0xa71
 
+#define AMD_PCI_VENDOR_ID 0x1002
+
 #define BLANK_BIOS_VER "xxx-xxx-xxxx"
 
 typedef enum AMD_CHIPS {
@@ -218,7 +220,6 @@ static bool load_options(int argc, char *argv[])
  * GPU Types
  ***************************************************/
 typedef struct {
-  unsigned int vendor_id;
   unsigned int device_id;
   unsigned long subsys_id;
   unsigned char rev_id;
@@ -228,113 +229,113 @@ typedef struct {
 
 static gputype_t gputypes[] = {
     /* Vega */
-    { 0x1002, 0x687f, 0, 0,    "Radeon RX Vega", CHIP_VEGA10},
-    { 0x1002, 0x687f, 0, 0xc0, "Radeon RX Vega 64", CHIP_VEGA10},
-    { 0x1002, 0x687f, 0, 0xc1, "Radeon RX Vega 64", CHIP_VEGA10},
-    { 0x1002, 0x687f, 0, 0xc3, "Radeon RX Vega 56", CHIP_VEGA10},
-    { 0x1002, 0x6863, 0, 0,    "Radeon Vega FE", CHIP_VEGA10},
+    { 0x687f, 0, 0,    "Radeon RX Vega", CHIP_VEGA10},
+    { 0x687f, 0, 0xc0, "Radeon RX Vega 64", CHIP_VEGA10},
+    { 0x687f, 0, 0xc1, "Radeon RX Vega 64", CHIP_VEGA10},
+    { 0x687f, 0, 0xc3, "Radeon RX Vega 56", CHIP_VEGA10},
+    { 0x6863, 0, 0,    "Radeon Vega FE", CHIP_VEGA10},
 
     /*Vega20*/
-    { 0x1002, 0x66af, 0, 0,    "Radeon VII", CHIP_VEGA20},
-    { 0x1002, 0x66af, 0, 0xc4, "Radeon VII", CHIP_VEGA20},
+    { 0x66af, 0, 0,    "Radeon VII", CHIP_VEGA20},
+    { 0x66af, 0, 0xc4, "Radeon VII", CHIP_VEGA20},
 
     /*Navi10*/
-    { 0x1002, 0x7310, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
-    { 0x1002, 0x7312, 0, 0,    "Radeon Pro W5700", CHIP_NAVI10},
-    { 0x1002, 0x7318, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
-    { 0x1002, 0x7319, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
-    { 0x1002, 0x731a, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
-    { 0x1002, 0x731b, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
-    { 0x1002, 0x731f, 0, 0,    "Radeon RX 5600/5700", CHIP_NAVI10},
-    { 0x1002, 0x731f, 0, 0xc0, "Radeon RX 5700 XT", CHIP_NAVI10}, /* XTX or 50th Anniversary Edition */
-    { 0x1002, 0x731f, 0, 0xc1, "Radeon RX 5700 XT", CHIP_NAVI10},
-    { 0x1002, 0x731f, 0, 0xc4, "Radeon RX 5700",    CHIP_NAVI10},
-    { 0x1002, 0x731f, 0, 0xca, "Radeon RX 5600 XT", CHIP_NAVI10},
+    { 0x7310, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
+    { 0x7312, 0, 0,    "Radeon Pro W5700", CHIP_NAVI10},
+    { 0x7318, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
+    { 0x7319, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
+    { 0x731a, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
+    { 0x731b, 0, 0,    "Radeon RX 5700", CHIP_NAVI10},
+    { 0x731f, 0, 0,    "Radeon RX 5600/5700", CHIP_NAVI10},
+    { 0x731f, 0, 0xc0, "Radeon RX 5700 XT", CHIP_NAVI10}, /* XTX or 50th Anniversary Edition */
+    { 0x731f, 0, 0xc1, "Radeon RX 5700 XT", CHIP_NAVI10},
+    { 0x731f, 0, 0xc4, "Radeon RX 5700",    CHIP_NAVI10},
+    { 0x731f, 0, 0xca, "Radeon RX 5600 XT", CHIP_NAVI10},
     /* Navi12 */
-    { 0x1002, 0x7360, 0, 0, "Radeon Navi 12", CHIP_NAVI12},
-    { 0x1002, 0x7362, 0, 0, "Radeon Navi 12", CHIP_NAVI12},
+    { 0x7360, 0, 0, "Radeon Navi 12", CHIP_NAVI12},
+    { 0x7362, 0, 0, "Radeon Navi 12", CHIP_NAVI12},
 
     /*Navi14*/
-    { 0x1002, 0x7340, 0, 0,    "Radeon RX 5500",    CHIP_NAVI14},
-    { 0x1002, 0x7340, 0, 0xc5, "Radeon RX 5500 XT", CHIP_NAVI14},
-    { 0x1002, 0x7341, 0, 0, "Radeon Pro W5500", CHIP_NAVI14},
-    { 0x1002, 0x7347, 0, 0, "Radeon Pro W5500M", CHIP_NAVI14},
-    { 0x1002, 0x734f, 0, 0, "Radeon Pro W5500M", CHIP_NAVI14},
+    { 0x7340, 0, 0,    "Radeon RX 5500",    CHIP_NAVI14},
+    { 0x7340, 0, 0xc5, "Radeon RX 5500 XT", CHIP_NAVI14},
+    { 0x7341, 0, 0, "Radeon Pro W5500", CHIP_NAVI14},
+    { 0x7347, 0, 0, "Radeon Pro W5500M", CHIP_NAVI14},
+    { 0x734f, 0, 0, "Radeon Pro W5500M", CHIP_NAVI14},
 
     /* Fury/Nano */
-    { 0x1002, 0x7300, 0, 0,    "Radeon R9 Fury/Nano/X", CHIP_FIJI},
-    { 0x1002, 0x7300, 0, 0xc8, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
-    { 0x1002, 0x7300, 0, 0xc9, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
-    { 0x1002, 0x7300, 0, 0xca, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
-    { 0x1002, 0x7300, 0, 0xcb, "Radeon R9 Fury", CHIP_FIJI},
+    { 0x7300, 0, 0,    "Radeon R9 Fury/Nano/X", CHIP_FIJI},
+    { 0x7300, 0, 0xc8, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
+    { 0x7300, 0, 0xc9, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
+    { 0x7300, 0, 0xca, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
+    { 0x7300, 0, 0xcb, "Radeon R9 Fury", CHIP_FIJI},
     /* RX 5xx */
-    { 0x1002, 0x67df, 0, 0xe7, "Radeon RX 580", CHIP_POLARIS10},
-    { 0x1002, 0x67df, 0, 0xef, "Radeon RX 570", CHIP_POLARIS10},
+    { 0x67df, 0, 0xe7, "Radeon RX 580", CHIP_POLARIS10},
+    { 0x67df, 0, 0xef, "Radeon RX 570", CHIP_POLARIS10},
 
-    { 0x1002, 0x67df, 0, 0xe1, "Radeon RX 590", CHIP_POLARIS30},   /* AMD Radeon RX 590 */
-    { 0x1002, 0x6fdf, 0, 0xef, "Radeon RX 580", CHIP_POLARIS20},   /* AMD Radeon RX 580 2048SP */
+    { 0x67df, 0, 0xe1, "Radeon RX 590", CHIP_POLARIS30},   /* AMD Radeon RX 590 */
+    { 0x6fdf, 0, 0xef, "Radeon RX 580", CHIP_POLARIS20},   /* AMD Radeon RX 580 2048SP */
 
-    { 0x1002, 0x67ff, 0, 0xcf, "Radeon RX 560", CHIP_POLARIS11},
-    { 0x1002, 0x67ef, 0, 0xe5, "Radeon RX 560", CHIP_POLARIS11},  /* known also as RX560D with CU 14/shaders 896 */
-    { 0x1002, 0x67ff, 0, 0xff, "Radeon RX 550", CHIP_POLARIS11},  /* new RX550 with 640 shaders */
-    { 0x1002, 0x699f, 0, 0xc7, "Radeon RX 550", CHIP_POLARIS12},
+    { 0x67ff, 0, 0xcf, "Radeon RX 560", CHIP_POLARIS11},
+    { 0x67ef, 0, 0xe5, "Radeon RX 560", CHIP_POLARIS11},  /* known also as RX560D with CU 14/shaders 896 */
+    { 0x67ff, 0, 0xff, "Radeon RX 550", CHIP_POLARIS11},  /* new RX550 with 640 shaders */
+    { 0x699f, 0, 0xc7, "Radeon RX 550", CHIP_POLARIS12},
     /* RX 4xx */
-    { 0x1002, 0x67df, 0, 0, "Radeon RX 470/480", CHIP_POLARIS10},
-    { 0x1002, 0x67df, 0, 0xc7, "Radeon RX 480", CHIP_POLARIS10},
-    { 0x1002, 0x67df, 0, 0xcf, "Radeon RX 470", CHIP_POLARIS10},
-    { 0x1002, 0x67ef, 0, 0, "Radeon RX 460", CHIP_POLARIS11},
-    { 0x1002, 0x67ef, 0, 0xc0, "Radeon RX 460", CHIP_POLARIS11},
-    { 0x1002, 0x67ef, 0, 0xc1, "Radeon RX 460", CHIP_POLARIS11},
-    { 0x1002, 0x67ef, 0, 0xc5, "Radeon RX 460", CHIP_POLARIS11},
-    { 0x1002, 0x67ef, 0, 0xcf, "Radeon RX 460", CHIP_POLARIS11},
+    { 0x67df, 0, 0, "Radeon RX 470/480", CHIP_POLARIS10},
+    { 0x67df, 0, 0xc7, "Radeon RX 480", CHIP_POLARIS10},
+    { 0x67df, 0, 0xcf, "Radeon RX 470", CHIP_POLARIS10},
+    { 0x67ef, 0, 0, "Radeon RX 460", CHIP_POLARIS11},
+    { 0x67ef, 0, 0xc0, "Radeon RX 460", CHIP_POLARIS11},
+    { 0x67ef, 0, 0xc1, "Radeon RX 460", CHIP_POLARIS11},
+    { 0x67ef, 0, 0xc5, "Radeon RX 460", CHIP_POLARIS11},
+    { 0x67ef, 0, 0xcf, "Radeon RX 460", CHIP_POLARIS11},
     /* R9 3xx */
-    { 0x1002, 0x67b1, 0, 0x80, "Radeon R9 390", CHIP_HAWAII},
-    { 0x1002, 0x67b0, 0, 0x80, "Radeon R9 390x", CHIP_HAWAII},
-    { 0x1002, 0x6939, 0, 0xf1, "Radeon R9 380", CHIP_TONGA},
-    { 0x1002, 0x6938, 0, 0, "Radeon R9 380x", CHIP_TONGA},
-    { 0x1002, 0x6810, 0, 0x81, "Radeon R7 370", CHIP_PITCAIRN},
-    { 0x1002, 0x665f, 0, 0x81, "Radeon R7 360", CHIP_BONAIRE},
+    { 0x67b1, 0, 0x80, "Radeon R9 390", CHIP_HAWAII},
+    { 0x67b0, 0, 0x80, "Radeon R9 390x", CHIP_HAWAII},
+    { 0x6939, 0, 0xf1, "Radeon R9 380", CHIP_TONGA},
+    { 0x6938, 0, 0, "Radeon R9 380x", CHIP_TONGA},
+    { 0x6810, 0, 0x81, "Radeon R7 370", CHIP_PITCAIRN},
+    { 0x665f, 0, 0x81, "Radeon R7 360", CHIP_BONAIRE},
     /* R9 2xx */
-    { 0x1002, 0x67B9, 0, 0, "Radeon R9 295x2", CHIP_HAWAII},
-    { 0x1002, 0x67b1, 0, 0, "Radeon R9 290/R9 390", CHIP_HAWAII},
-    { 0x1002, 0x67b0, 0, 0, "Radeon R9 290x/R9 390x", CHIP_HAWAII},
-    { 0x1002, 0x6939, 0, 0, "Radeon R9 285/R9 380", CHIP_TONGA},
-    { 0x1002, 0x6811, 0, 0, "Radeon R9 270", CHIP_PITCAIRN},
-    { 0x1002, 0x6810, 0, 0, "Radeon R9 270x/R7 370", CHIP_PITCAIRN},
-    { 0x1002, 0x6658, 0, 0, "Radeon R7 260x", CHIP_BONAIRE},
+    { 0x67B9, 0, 0, "Radeon R9 295x2", CHIP_HAWAII},
+    { 0x67b1, 0, 0, "Radeon R9 290/R9 390", CHIP_HAWAII},
+    { 0x67b0, 0, 0, "Radeon R9 290x/R9 390x", CHIP_HAWAII},
+    { 0x6939, 0, 0, "Radeon R9 285/R9 380", CHIP_TONGA},
+    { 0x6811, 0, 0, "Radeon R9 270", CHIP_PITCAIRN},
+    { 0x6810, 0, 0, "Radeon R9 270x/R7 370", CHIP_PITCAIRN},
+    { 0x6658, 0, 0, "Radeon R7 260x", CHIP_BONAIRE},
     /* HD 7xxx */
-    { 0x1002, 0x679b, 0, 0, "Radeon HD7990", CHIP_TAHITI},
-    { 0x1002, 0x6798, 0, 0, "Radeon HD7970/R9 280x", CHIP_TAHITI},
-    { 0x1002, 0x679a, 0, 0, "Radeon HD7950/R9 280", CHIP_TAHITI},
-    { 0x1002, 0x679E, 0, 0, "Radeon HD7870XT", CHIP_TAHITI},
-    { 0x1002, 0x6818, 0, 0, "Radeon HD7870", CHIP_PITCAIRN},
-    { 0x1002, 0x6819, 0, 0, "Radeon HD7850", CHIP_PITCAIRN},
-    { 0x1002, 0x665C, 0, 0, "Radeon HD7790", CHIP_BONAIRE},
+    { 0x679b, 0, 0, "Radeon HD7990", CHIP_TAHITI},
+    { 0x6798, 0, 0, "Radeon HD7970/R9 280x", CHIP_TAHITI},
+    { 0x679a, 0, 0, "Radeon HD7950/R9 280", CHIP_TAHITI},
+    { 0x679E, 0, 0, "Radeon HD7870XT", CHIP_TAHITI},
+    { 0x6818, 0, 0, "Radeon HD7870", CHIP_PITCAIRN},
+    { 0x6819, 0, 0, "Radeon HD7850", CHIP_PITCAIRN},
+    { 0x665C, 0, 0, "Radeon HD7790", CHIP_BONAIRE},
     /* HD 6xxx */
-    { 0x1002, 0x671D, 0, 0, "Radeon HD6990", CHIP_ANTILLES},
-    { 0x1002, 0x6718, 0, 0, "Radeon HD6970", CHIP_CAYMAN},
-    { 0x1002, 0x6719, 0, 0, "Radeon HD6950", CHIP_CAYMAN},
-    { 0x1002, 0x671F, 0, 0, "Radeon HD6930", CHIP_CAYMAN},
-    { 0x1002, 0x6738, 0, 0, "Radeon HD6870", CHIP_BARTS},
-    { 0x1002, 0x6739, 0, 0, "Radeon HD6850", CHIP_BARTS},
-    { 0x1002, 0x6778, 0, 0, "Radeon HD6450/HD7470", CHIP_CAICOS},
-    { 0x1002, 0x6779, 0, 0, "Radeon HD6450", CHIP_CAICOS},
+    { 0x671D, 0, 0, "Radeon HD6990", CHIP_ANTILLES},
+    { 0x6718, 0, 0, "Radeon HD6970", CHIP_CAYMAN},
+    { 0x6719, 0, 0, "Radeon HD6950", CHIP_CAYMAN},
+    { 0x671F, 0, 0, "Radeon HD6930", CHIP_CAYMAN},
+    { 0x6738, 0, 0, "Radeon HD6870", CHIP_BARTS},
+    { 0x6739, 0, 0, "Radeon HD6850", CHIP_BARTS},
+    { 0x6778, 0, 0, "Radeon HD6450/HD7470", CHIP_CAICOS},
+    { 0x6779, 0, 0, "Radeon HD6450", CHIP_CAICOS},
     /* HD 5xxx */
-    { 0x1002, 0x689C, 0, 0, "Radeon HD5970", CHIP_HEMLOCK},
-    { 0x1002, 0x6898, 0, 0, "Radeon HD5870", CHIP_CYPRESS},
-    { 0x1002, 0x6899, 0, 0, "Radeon HD5850", CHIP_CYPRESS},
-    { 0x1002, 0x689E, 0, 0, "Radeon HD5830", CHIP_CYPRESS},
-    { 0, 0, 0, 0, "Unknown", CHIP_UNKNOWN}
+    { 0x689C, 0, 0, "Radeon HD5970", CHIP_HEMLOCK},
+    { 0x6898, 0, 0, "Radeon HD5870", CHIP_CYPRESS},
+    { 0x6899, 0, 0, "Radeon HD5850", CHIP_CYPRESS},
+    { 0x689E, 0, 0, "Radeon HD5830", CHIP_CYPRESS},
+    { 0, 0, 0, "Unknown", CHIP_UNKNOWN}
 };
 
 // find GPU type by vendor id/device id
-static gputype_t *_find_gpu(unsigned int vendor_id, unsigned int device_id, unsigned long subsys_id, unsigned char rev_id)
+static gputype_t *_find_gpu(unsigned int device_id, unsigned long subsys_id, unsigned char rev_id)
 {
   gputype_t *g = gputypes;
 
   while (g->device_id)
   {
-    if (g->vendor_id == vendor_id && g->device_id == device_id && g->subsys_id == subsys_id && g->rev_id == rev_id) {
+    if (g->device_id == device_id && g->subsys_id == subsys_id && g->rev_id == rev_id) {
       return g;
     }
 
@@ -345,23 +346,23 @@ static gputype_t *_find_gpu(unsigned int vendor_id, unsigned int device_id, unsi
 }
 
 // find GPU type by vendor id/device id
-static gputype_t *find_gpu(unsigned int vendor_id, unsigned int device_id, unsigned long subsys_id, unsigned char rev_id)
+static gputype_t *find_gpu(unsigned int device_id, unsigned long subsys_id, unsigned char rev_id)
 {
-  gputype_t *g = _find_gpu(vendor_id, device_id, subsys_id, rev_id);
+  gputype_t *g = _find_gpu(device_id, subsys_id, rev_id);
 
   //if specific subsys id not found, try again with 0
   if (g == NULL && subsys_id > 0) {
-    g = _find_gpu(vendor_id, device_id, 0, rev_id);
+    g = _find_gpu(device_id, 0, rev_id);
   }
 
   //if specific rev id not found, try again with 0 for general device type
   if (g == NULL && rev_id > 0) {
-    g = _find_gpu(vendor_id, device_id, subsys_id, 0);
+    g = _find_gpu(device_id, subsys_id, 0);
   }
 
   //if still not found, try no rev id or subsys id
   if (g == NULL) {
-    g = _find_gpu(vendor_id, device_id, 0, 0);
+    g = _find_gpu(device_id, 0, 0);
   }
 
   return g;
@@ -669,7 +670,7 @@ static int opencl_get_devices()
                 clGetDeviceInfo(devices[i], CL_DEVICE_VENDOR_ID, sizeof(intval), &intval, NULL);
 
                 // if vendor AMD, lookup pci ID
-                if (intval == 0x1002) {
+                if (intval == AMD_PCI_VENDOR_ID) {
                   cl_device_topology_amd amdtopo;
                   gpu_t *dev;
 
@@ -811,11 +812,10 @@ int main(int argc, char *argv[])
   gpu_t *d;
   struct pci_access *pci;
   struct pci_dev *pcidev;
-  int i, meminfo, manufacturer, model, mem_type;
+  int i, meminfo, manufacturer, model, mem_type, fd;
   char buf[1024];
   off_t base;
   int *pcimem;
-  int fd;
   int fail=0;
 
   if (!load_options(argc, argv)) {
@@ -834,7 +834,7 @@ int main(int argc, char *argv[])
 
   for (pcidev = pci->devices; pcidev; pcidev = pcidev->next)
   {
-    if (((pcidev->device_class & 0xff00) >> 8) == PCI_BASE_CLASS_DISPLAY && pcidev->vendor_id == 0x1002) {
+    if (((pcidev->device_class & 0xff00) >> 8) == PCI_BASE_CLASS_DISPLAY && pcidev->vendor_id == AMD_PCI_VENDOR_ID) {
       is_apu = false;
 
       //check for APU
@@ -855,7 +855,7 @@ int main(int argc, char *argv[])
       }
 
       if ((d = new_device()) != NULL) {
-        d->vendor_id = pcidev->vendor_id;
+        d->vendor_id = AMD_PCI_VENDOR_ID;
         d->device_id = pcidev->device_id;
         d->pcibus = pcidev->bus;
         d->pcidev = pcidev->dev;
@@ -872,7 +872,7 @@ int main(int argc, char *argv[])
 
        // printf("* Vendor: %04x, Device: %04x, Revision: %02x\n", pcidev->vendor_id, pcidev->device_id, d->pcirev);
 
-        d->gpu = find_gpu(pcidev->vendor_id, pcidev->device_id, d->subdevice, d->pcirev);
+        d->gpu = find_gpu(pcidev->device_id, d->subdevice, d->pcirev);
 
         if (dump_vbios(d)) {
           /*printf("%02x.%02x.%x: vbios dump successful.\n", d->pcibus, d->pcidev, d->pcifunc);
@@ -972,7 +972,7 @@ int main(int argc, char *argv[])
       else {
         printf("%02x.%02x.%x:", d->pcibus, d->pcidev, d->pcifunc);
 
-        if (d->gpu && d->gpu->vendor_id != 0) {
+        if (d->gpu) {
           printf("%s:", d->gpu->name);
         } else {
           printf("Unknown GPU %04x-%04xr%02x:",d->vendor_id, d->device_id, d->pcirev);
@@ -1007,7 +1007,7 @@ int main(int argc, char *argv[])
           "Subvendor:  0x%04x\n"
           "Subdevice:  0x%04x\n"
           "Sysfs Path: %s\n",
-          d->gpu->vendor_id, d->gpu->device_id, d->pcirev, d->gpu->name,
+          AMD_PCI_VENDOR_ID, d->gpu->device_id, d->pcirev, d->gpu->name,
           amd_asic_name[d->gpu->asic_type], d->bios_version,
           d->pcibus, d->pcidev, d->pcifunc,
           d->opencl_platform, d->opencl_id,
