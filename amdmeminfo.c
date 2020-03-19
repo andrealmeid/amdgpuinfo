@@ -1012,11 +1012,10 @@ int main(int argc, char *argv[])
           printf("Memory Configuration: 0x%x\n", d->memconfig);
         }
 
-        printf("Memory Type: %s\n", mem_type_label[d->mem->type]);
         printf("Memory Model: ");
 
         if (d->mem && d->mem->manufacturer != 0) {
-          printf("%s\n", d->mem->name);
+          printf("%s:%s:", d->mem->name, mem_type_label[d->mem->type]);
         } else {
           printf("Unknown Memory - Mfr:%d Model:%d\n", d->mem_manufacturer, d->mem_model);
         }
