@@ -38,8 +38,7 @@
 #include <CL/cl_ext.h>
 #endif
 
-#define VERSION "AMDMemInfo by Zuikkis <zuikkis@gmail.com>\n" \
-      "Updated by Yann St.Arnaud <ystarnaud@gmail.com>"
+#define VERSION "AMDMemInfo v0.1"
 
 #define LOG_INFO 1
 #define LOG_ERROR 2
