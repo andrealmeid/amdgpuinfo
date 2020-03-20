@@ -1,21 +1,21 @@
 /*
- * AMDMemInfo, (c) 2014 by Zuikkis <zuikkis@gmail.com>
+ * AMDGPUInfo, (c) 2014 by Zuikkis <zuikkis@gmail.com>
  * Updated by Yann St.Arnaud <ystarnaud@gmail.com>
  *
  * Loosely based on "amdmeminfo" by Joerie de Gram.
  *
- * AMDMemInfo is free software: you can redistribute it and/or modify
+ * AMDGPUInfo is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
- * AMDMemInfo is distributed in the hope that it will be useful,
+ * AMDGPUInfo is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with AMDMemInfo.  If not, see <http://www.gnu.org/licenses/>.
+ * along with AMDGPUInfo.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 #include <stdlib.h>
@@ -38,7 +38,7 @@
 #include <CL/cl_ext.h>
 #endif
 
-#define VERSION "AMDMemInfo v0.1"
+#define VERSION "AMDGPUInfo v0.1"
 
 #define LOG_INFO 1
 #define LOG_ERROR 2
@@ -1044,7 +1044,7 @@ int main(int argc, char *argv[])
   free_devices();
 
   if (fail) {
-    print(LOG_ERROR, "Direct PCI access failed. Run AMDMemInfo as root to get memory type information!\n");
+    print(LOG_ERROR, "Direct PCI access failed. Run AMDGPUInfo as root to get memory type information!\n");
   }
 
   return 0;

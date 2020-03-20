@@ -3,7 +3,7 @@
 AMDAPPSDK_PATH=/opt/AMDAPP
 AMDAPPSDK_ARCH=x86
 
-PROGRAM_NAME := amdmeminfo
+PROGRAM_NAME := amdgpuinfo
 
 SRC := $(wildcard *.c)
 OBJS := ${SRC:.c=.o}
