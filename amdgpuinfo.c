@@ -437,16 +437,12 @@ static memtype_t memtypes[] = {
 // Find Memory Model by manufacturer/model
 static memtype_t *find_mem(int mem_type, int manufacturer, int model)
 {
-  memtype_t *m = memtypes; //, *last = NULL;
+  memtype_t *m = memtypes;
 
   while (m->type)
   {
-    if (m->type == mem_type && m->manufacturer == manufacturer && m->model == model) {
-      //last = m;
-
-      //if (m->model == model)
+    if (m->type == mem_type && m->manufacturer == manufacturer && m->model == model)
       return m;
-    }
 
     ++m;
   }
@@ -866,20 +862,10 @@ int main(int argc, char *argv[])
         sprintf(buf, "%s/devices/%04x:%02x:%02x.%d", sysfs_path, pcidev->domain, pcidev->bus, pcidev->dev, pcidev->func);
         d->path = strdup(buf);
 
-        //printf("%s\n", d->path);
-
-       // printf("* Vendor: %04x, Device: %04x, Revision: %02x\n", pcidev->vendor_id, pcidev->device_id, d->pcirev);
-
         d->gpu = find_gpu(pcidev->device_id, d->subdevice, d->pcirev);
 
-        if (dump_vbios(d)) {
-          /*printf("%02x.%02x.%x: vbios dump successful.\n", d->pcibus, d->pcidev, d->pcifunc);
-          printf("%x %x\n", d->vbios[0], d->vbios[1]);*/
+        if (dump_vbios(d))
           get_bios_version(d);
-        }
-        /*else {
-          printf("%02x.%02x.%x: vbios dump failed.\n", d->pcibus, d->pcidev, d->pcifunc);
-        }*/
 
         //currenty Vega GPUs do not have a memory configuration register to read
 	  if ((d->gpu->asic_type == CHIP_VEGA10) ||
