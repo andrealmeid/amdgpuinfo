@@ -795,6 +795,30 @@ static void get_bios_version(gpu_t *gpu)
 }
 
 /*
+ * Check if a device is an APU
+ */
+static bool is_apu(struct pci_access *pci, struct pci_dev *pcidev)
+{
+  bool is_apu = false;
+  regex_t regex;
+  char buf[1024];
+
+  memset(buf, 0, 1024);
+
+  if (pci_lookup_name(pci, buf, sizeof(buf), PCI_LOOKUP_DEVICE, pcidev->vendor_id, pcidev->device_id) != NULL) {
+    if (regcomp(&regex, "(Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven)", REG_ICASE | REG_EXTENDED) == 0) {
+      if (regexec(&regex, buf, 0, NULL, 0) == 0) {
+        is_apu = true;
+      }
+    }
+  }
+
+  regfree(&regex);
+
+  return is_apu;
+}
+
+/*
  * Find all suitable cards, then find their memory space and get memory information.
  */
 int main(int argc, char *argv[])
@@ -819,30 +843,14 @@ int main(int argc, char *argv[])
   pci_scan_bus(pci);
 
   char *sysfs_path = pci_get_param(pci, "sysfs.path");
-  bool is_apu;
-  regex_t regex;
 
   for (pcidev = pci->devices; pcidev; pcidev = pcidev->next)
   {
     if (((pcidev->device_class & 0xff00) >> 8) == PCI_BASE_CLASS_DISPLAY && pcidev->vendor_id == AMD_PCI_VENDOR_ID) {
-      is_apu = false;
 
-      //check for APU
-      memset(buf, 0, 1024);
-      if (pci_lookup_name(pci, buf, sizeof(buf), PCI_LOOKUP_DEVICE, pcidev->vendor_id, pcidev->device_id) != NULL) {
-        if (regcomp(&regex, "(Kaveri|Beavercreek|Sumo|Wrestler|Kabini|Mullins|Temash|Trinity|Richland|Stoney|Carrizo|Raven)", REG_ICASE | REG_EXTENDED) == 0) {
-          if (regexec(&regex, buf, 0, NULL, 0) == 0) {
-            is_apu = true;
-          }
-        }
-
-        regfree(&regex);
-      }
-
-      //skip APUs
-      if (is_apu) {
+      // skip APUs
+      if (is_apu(pci, pcidev))
         continue;
-      }
 
       if ((d = new_device()) != NULL) {
         d->vendor_id = AMD_PCI_VENDOR_ID;
