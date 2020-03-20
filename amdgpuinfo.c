@@ -1,21 +1,11 @@
 /*
- * AMDGPUInfo, (c) 2014 by Zuikkis <zuikkis@gmail.com>
- * Updated by Yann St.Arnaud <ystarnaud@gmail.com>
+ * AMDGPUInfo
  *
- * Loosely based on "amdmeminfo" by Joerie de Gram.
+ * (C) 2014 Zuikkis <zuikkis@gmail.com>
+ * (C) 2018 Yann St.Arnaud <ystarnaud@gmail.com>
+ * (C) 2020 André Almeida <andrealmeid@riseup.net>
  *
- * AMDGPUInfo is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * AMDGPUInfo is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with AMDGPUInfo.  If not, see <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
 #include <stdlib.h>
