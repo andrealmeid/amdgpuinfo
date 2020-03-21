@@ -28,6 +28,9 @@
 #include <CL/cl.h>
 #include <CL/cl_ext.h>
 #endif
+#ifdef CL_DEVICE_TOPOLOGY_AMD
+  #define USE_OPENCL 1
+#endif
 
 #define VERSION "AMDGPUInfo v0.1"
 
@@ -136,7 +139,9 @@ bool opt_bios_only = false; // --biosonly / -b
 bool opt_opencl_order = false; // --opencl / -o
 bool opt_output_short = false; // --short / -s
 bool opt_quiet = false;  // --quiet / -q to turn off
+#ifdef USE_OPENCL
 bool opt_opencl_enabled = true;  // --no-opencl / -n to turn off
+#endif
 bool opt_use_stderr = false;  // --use-stderr
 bool opt_show_memconfig = false; // --memconfig / -c
 
@@ -168,7 +173,9 @@ static void showhelp(char *program)
     "-c, --memconfig Output the memory configuration\n"
     "-h, --help      Help\n"
     "-n, --no-opencl Disable OpenCL information lookup\n"
+#ifdef USE_OPENCL
     "-o, --opencl    Order by OpenCL ID (cgminer/sgminer GPU order)\n"
+#endif
     "-q, --quiet     Only output results\n"
     "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
     "--use-stderr    Output errors to stderr\n"
@@ -197,8 +204,10 @@ static bool load_options(int argc, char *argv[])
       opt_quiet = true;
     } else if (!strcasecmp("--memconfig", argv[i]) || !strcasecmp("-c", argv[i])) {
       opt_show_memconfig = true;
+#ifdef OPENCL
     } else if (!strcasecmp("--no-opencl", argv[i]) || !strcasecmp("-n", argv[i])) {
       opt_opencl_enabled = false;
+#endif
     } else if (!strcasecmp("--use-stderr", argv[i])) {
       opt_use_stderr = true;
     }
@@ -533,6 +542,10 @@ static void free_devices()
   last_device = device_list = NULL;
 }
 
+/***********************************************
+ * OpenCL functions
+ ***********************************************/
+#ifdef USE_OPENCL
 // find device by pci bus/dev/func
 static gpu_t *find_device(u8 bus, u8 dev, u8 func)
 {
@@ -595,10 +608,6 @@ static void opencl_reorder()
   }
 }
 
-/***********************************************
- * OpenCL functions
- ***********************************************/
-#ifdef CL_DEVICE_TOPOLOGY_AMD
 static cl_platform_id *opencl_get_platforms(int *platform_count)
 {
   cl_int status;
@@ -698,11 +707,6 @@ static int opencl_get_devices()
   }
 
   return ret;
-}
-#else
-static int opencl_get_devices()
-{
-  return 0;
 }
 #endif
 
@@ -921,6 +925,7 @@ int main(int argc, char *argv[])
 
   pci_cleanup(pci);
 
+#ifdef USE_OPENCL
   // get open cl device ids and link them to pci devices found
   if (opt_opencl_enabled) {
     int numopencl = opencl_get_devices();
@@ -930,6 +935,7 @@ int main(int argc, char *argv[])
       opencl_reorder();
     }
   }
+#endif
 
   //display info
   d = device_list;
