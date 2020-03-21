@@ -7,6 +7,11 @@ project('amdgpuinfo', 'c',
         ],
 )
 
+project_args = [
+  '-D_GNU_SOURCE' # For strdup in C11
+]
+add_project_arguments(project_args, language: ['c'])
+
 pci_dep = dependency('libpci')
 
 executable(
