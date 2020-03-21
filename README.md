@@ -8,7 +8,7 @@ Get information from AMD Radeon GPUs.
 
 * Download and unzip or git clone: `git clone https://github.com/andrealmeid/amdgpuinfo`
 * `cd amdgpuinfo`
-* Edit `Makefile` to specify AMDAPPSDK path or install OpenCL library: `sudo apt-get install ocl-icd-opencl-dev `
+* Install OpenCL library: `sudo apt-get install ocl-icd-opencl-dev `
 * Install Linux PCI utilities: `sudo apt-get install libpci-dev`
 * `make`
 * Optional: `sudo cp amdgpuinfo /usr/local/bin`
