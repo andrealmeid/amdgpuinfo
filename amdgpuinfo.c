@@ -21,6 +21,8 @@
 #include <regex.h>
 #include <strings.h>
 
+#include "config.h"
+
 #ifdef __APPLE_CC__
 #include <OpenCL/opencl.h>
 #include <OpenCL/cl_ext.h>
@@ -31,8 +33,6 @@
 #ifdef CL_DEVICE_TOPOLOGY_AMD
   #define USE_OPENCL 1
 #endif
-
-#define VERSION "AMDGPUInfo v0.1"
 
 #define LOG_INFO 1
 #define LOG_ERROR 2
@@ -166,7 +166,8 @@ static void print(int priority, const char *fmt, ...)
 // show help
 static void showhelp(char *program)
 {
-  printf("%s\n\n"
+  printf(
+    NAME " v"  VERSION "\n\n"
     "Usage: %s [options]\n\n"
     "Options:\n"
     "-b, --biosonly  Only output BIOS Versions (implies -s with <OpenCLID>:<BIOSVersion> output)\n"
@@ -179,7 +180,7 @@ static void showhelp(char *program)
     "-q, --quiet     Only output results\n"
     "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
     "--use-stderr    Output errors to stderr\n"
-    "\n", VERSION, program);
+    "\n", program);
 }
 
 
@@ -837,7 +838,7 @@ int main(int argc, char *argv[])
     return 0;
   }
 
-  print(LOG_INFO, "%s\n", VERSION);
+  print(LOG_INFO, NAME " v" VERSION "\n");
 
   pci = pci_alloc();
   pci_init(pci);
