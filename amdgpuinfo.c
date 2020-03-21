@@ -19,6 +19,7 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <regex.h>
+#include <strings.h>
 
 #ifdef __APPLE_CC__
 #include <OpenCL/opencl.h>
