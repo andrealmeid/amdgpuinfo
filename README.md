@@ -9,12 +9,20 @@ Get informations from AMD Radeon GPUs.
 * ocl-icd
 * opencl-headers
 
-### Installation
+### Build
 
 * `git clone https://github.com/andrealmeid/amdgpuinfo`
 * `cd amdgpuinfo`
-* `make`
-* Optional: `sudo cp amdgpuinfo /usr/local/bin`
+* `meson build`
+* `ninja -C build`
+
+### Run locally
+
+* `./build/amdgpuinfo`
+
+### Installation
+
+* `ninja -C build install`
 
 ### Usage
 
