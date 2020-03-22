@@ -23,17 +23,6 @@
 
 #include "config.h"
 
-#ifdef __APPLE_CC__
-#include <OpenCL/opencl.h>
-#include <OpenCL/cl_ext.h>
-#else
-#include <CL/cl.h>
-#include <CL/cl_ext.h>
-#endif
-#ifdef CL_DEVICE_TOPOLOGY_AMD
-  #define USE_OPENCL 1
-#endif
-
 #define LOG_INFO 1
 #define LOG_ERROR 2
 
@@ -139,9 +128,6 @@ bool opt_bios_only = false; // --biosonly / -b
 bool opt_opencl_order = false; // --opencl / -o
 bool opt_output_short = false; // --short / -s
 bool opt_quiet = false;  // --quiet / -q to turn off
-#ifdef USE_OPENCL
-bool opt_opencl_enabled = true;  // --no-opencl / -n to turn off
-#endif
 bool opt_use_stderr = false;  // --use-stderr
 bool opt_show_memconfig = false; // --memconfig / -c
 
@@ -174,9 +160,6 @@ static void showhelp(char *program)
     "-c, --memconfig Output the memory configuration\n"
     "-h, --help      Help\n"
     "-n, --no-opencl Disable OpenCL information lookup\n"
-#ifdef USE_OPENCL
-    "-o, --opencl    Order by OpenCL ID (cgminer/sgminer GPU order)\n"
-#endif
     "-q, --quiet     Only output results\n"
     "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
     "--use-stderr    Output errors to stderr\n"
@@ -205,10 +188,6 @@ static bool load_options(int argc, char *argv[])
       opt_quiet = true;
     } else if (!strcasecmp("--memconfig", argv[i]) || !strcasecmp("-c", argv[i])) {
       opt_show_memconfig = true;
-#ifdef OPENCL
-    } else if (!strcasecmp("--no-opencl", argv[i]) || !strcasecmp("-n", argv[i])) {
-      opt_opencl_enabled = false;
-#endif
     } else if (!strcasecmp("--use-stderr", argv[i])) {
       opt_use_stderr = true;
     }
@@ -475,8 +454,6 @@ typedef struct gpu {
   memtype_t *mem;
   int memconfig, mem_type, mem_manufacturer, mem_model;
   u8 pcibus, pcidev, pcifunc, pcirev;
-  int opencl_platform;
-  int opencl_id;
   u32 subvendor, subdevice;
   char *path;
   unsigned char *vbios;
@@ -502,8 +479,6 @@ static gpu_t *new_device()
   d->vbios = NULL;
   d->path = NULL;
   memset(d->bios_version, 0, 64);
-  d->opencl_platform = -1;
-  d->opencl_id = -1;
   d->next = d->prev = NULL;
   d->mem_manufacturer = 0;
   d->mem_model = 0;
@@ -542,175 +517,6 @@ static void free_devices()
 
   last_device = device_list = NULL;
 }
-
-/***********************************************
- * OpenCL functions
- ***********************************************/
-#ifdef USE_OPENCL
-// find device by pci bus/dev/func
-static gpu_t *find_device(u8 bus, u8 dev, u8 func)
-{
-  gpu_t *d = device_list;
-
-  while (d)
-  {
-    if (d->pcibus == bus && d->pcidev == dev && d->pcifunc == func) {
-      return d;
-    }
-
-    d = d->next;
-  }
-
-  return NULL;
-}
-
-// reorder devices based on opencl ID
-static void opencl_reorder()
-{
-  gpu_t *p, *d = device_list;
-
-  while (d)
-  {
-    // if not at the end of the list
-    if (d->next) {
-      // and next open cl ID is less than current...
-      if (d->opencl_id > d->next->opencl_id) {
-        // swap positions
-        p = d->next;
-
-        d->next = p->next;
-        p->prev = d->prev;
-
-        if (d->next) {
-          d->next->prev = d;
-        } else {
-          last_device = d;
-        }
-
-        if (p->prev) {
-          p->prev->next = p;
-        } else {
-          device_list = p;
-        }
-
-        p->next = d;
-        d->prev = p;
-
-        // start over from the beginning
-        d = device_list;
-      // next open cl ID is equal or higher, move on to the next
-      } else {
-        d = d->next;
-      }
-    // if at end of list, move up to exit loop
-    } else {
-      d = d->next;
-    }
-  }
-}
-
-static cl_platform_id *opencl_get_platforms(int *platform_count)
-{
-  cl_int status;
-  cl_platform_id *platforms = NULL;
-  cl_uint numPlatforms;
-
-  *platform_count = 0;
-
-  if ((status = clGetPlatformIDs(0, NULL, &numPlatforms)) == CL_SUCCESS) {
-    if (numPlatforms > 0) {
-      if ((platforms = (cl_platform_id *)malloc(numPlatforms*sizeof(cl_platform_id))) != NULL) {
-        if (((status = clGetPlatformIDs(numPlatforms, platforms, NULL)) == CL_SUCCESS)) {
-          *platform_count = (int)numPlatforms;
-          return platforms;
-        } else {
-          print(LOG_ERROR, "clGetPlatformIDs() failed: Unable to get OpenCL platform ID.\n");
-        }
-      } else {
-        print(LOG_ERROR, "malloc() failed in opencl_get_platform().\n");
-      }
-    } else {
-      print(LOG_ERROR, "No OpenCL platforms found.\n");
-    }
-  } else {
-    print(LOG_ERROR, "clGetPlatformIDs() failed: Unable to get number of OpenCL platforms.\n");
-  }
-
-  // free memory
-  if (platforms == NULL) {
-    free(platforms);
-    platforms = NULL;
-  }
-
-  return NULL;
-}
-
-static int opencl_get_devices()
-{
-  cl_int status;
-  cl_platform_id *platforms = NULL;
-  cl_device_id *devices;
-  cl_uint numDevices;
-  int p, numPlatforms, ret = -1;
-
-  if ((platforms = opencl_get_platforms(&numPlatforms)) != NULL) {
-    for(p = 0; p < numPlatforms; ++p) {
-      if ((status = clGetDeviceIDs(platforms[p], CL_DEVICE_TYPE_GPU, 0, NULL, &numDevices)) == CL_SUCCESS) {
-        if (numDevices) {
-          if ((devices = (cl_device_id *)malloc(numDevices*sizeof(cl_device_id))) != NULL) {
-            if ((status = clGetDeviceIDs(platforms[p], CL_DEVICE_TYPE_GPU, numDevices, devices, NULL)) == CL_SUCCESS) {
-              unsigned int i;
-              cl_uint intval;
-
-              for (i = 0;i < numDevices; ++i)
-              {
-                clGetDeviceInfo(devices[i], CL_DEVICE_VENDOR_ID, sizeof(intval), &intval, NULL);
-
-                // if vendor AMD, lookup pci ID
-                if (intval == AMD_PCI_VENDOR_ID) {
-                  cl_device_topology_amd amdtopo;
-                  gpu_t *dev;
-
-                  if ((status = clGetDeviceInfo(devices[i], CL_DEVICE_TOPOLOGY_AMD, sizeof(amdtopo), &amdtopo, NULL)) == CL_SUCCESS) {
-
-                    if ((dev = find_device((u8)amdtopo.pcie.bus, (u8)amdtopo.pcie.device, (u8)amdtopo.pcie.function)) != NULL) {
-                      dev->opencl_platform = p;
-                      dev->opencl_id = i;
-                    }
-                  } else {
-                    print(LOG_ERROR, "CL_DEVICE_TOPOLOGY_AMD Failed: Unable to map OpenCL device to PCI device.\n");
-                  }
-                }
-
-                ret = numDevices;
-              }
-            } else {
-              print(LOG_ERROR, "CL_DEVICE_TYPE_GPU Failed: Unable to get OpenCL devices.\n");
-            }
-
-            free(devices);
-          } else {
-            print(LOG_ERROR, "malloc() failed in opencl_get_devices().\n");
-          }
-        }
-      } else {
-        print(LOG_ERROR, "CL_DEVICE_TYPE_GPU Failed: Unable to get the number of OpenCL devices.\n");
-      }
-    }
-  }
-  else {
-    print(LOG_ERROR, "No OpenCL platforms detected.\n");
-  }
-
-  if (platforms != NULL) {
-    free(platforms);
-    platforms = NULL;
-  }
-
-  return ret;
-}
-#endif
-
 
 /***********************************************
  * VBIOS functions
@@ -926,18 +732,6 @@ int main(int argc, char *argv[])
 
   pci_cleanup(pci);
 
-#ifdef USE_OPENCL
-  // get open cl device ids and link them to pci devices found
-  if (opt_opencl_enabled) {
-    int numopencl = opencl_get_devices();
-
-    // reorder by opencl id?
-    if (opt_opencl_order) {
-      opencl_reorder();
-    }
-  }
-#endif
-
   //display info
   d = device_list;
   while (d)
@@ -950,11 +744,7 @@ int main(int argc, char *argv[])
     // short form
     if (opt_output_short) {
 
-      if (d->opencl_id > -1) {
-        printf("GPU%d:", d->opencl_id);
-      } else {
-        printf("GPU:");
-      }
+      printf("GPU:");
 
       //only output bios version
       if (opt_bios_only) {
@@ -994,15 +784,12 @@ int main(int argc, char *argv[])
           "Chip Type: %s\n"
           "BIOS Version: %s\n"
           "PCI: %02x:%02x.%x\n"
-          "OpenCL Platform: %d\n"
-          "OpenCL ID: %d\n"
           "Subvendor:  0x%04x\n"
           "Subdevice:  0x%04x\n"
           "Sysfs Path: %s\n",
           AMD_PCI_VENDOR_ID, d->gpu->device_id, d->pcirev, d->gpu->name,
           amd_asic_name[d->gpu->asic_type], d->bios_version,
           d->pcibus, d->pcidev, d->pcifunc,
-          d->opencl_platform, d->opencl_id,
           d->subvendor, d->subdevice,
           d->path);
 
