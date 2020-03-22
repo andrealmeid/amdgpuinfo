@@ -126,7 +126,6 @@ static const char *amd_asic_name[] = {
  ***********************************/
 bool opt_bios_only = false; // --biosonly / -b
 bool opt_output_short = false; // --short / -s
-bool opt_use_stderr = false;  // --use-stderr
 bool opt_show_memconfig = false; // --memconfig / -c
 
 // output function that only displays if verbose is on
@@ -135,7 +134,7 @@ static void print(int priority, const char *fmt, ...)
   va_list args;
 
   va_start(args, fmt);
-  if (priority == LOG_ERROR && opt_use_stderr) {
+  if (priority == LOG_ERROR) {
     vfprintf(stderr, fmt, args);
   } else {
     vprintf(fmt, args);
@@ -154,7 +153,6 @@ static void showhelp(char *program)
     "-c, --memconfig Output the memory configuration\n"
     "-h, --help      Help\n"
     "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
-    "--use-stderr    Output errors to stderr\n"
     "\n", program);
 }
 
@@ -176,8 +174,6 @@ static bool load_options(int argc, char *argv[])
       opt_output_short = true;
     } else if (!strcasecmp("--memconfig", argv[i]) || !strcasecmp("-c", argv[i])) {
       opt_show_memconfig = true;
-    } else if (!strcasecmp("--use-stderr", argv[i])) {
-      opt_use_stderr = true;
     }
   }
 
