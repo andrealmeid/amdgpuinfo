@@ -125,7 +125,6 @@ static const char *amd_asic_name[] = {
  * Program Options
  ***********************************/
 bool opt_bios_only = false; // --biosonly / -b
-bool opt_opencl_order = false; // --opencl / -o
 bool opt_output_short = false; // --short / -s
 bool opt_quiet = false;  // --quiet / -q to turn off
 bool opt_use_stderr = false;  // --use-stderr
@@ -159,7 +158,6 @@ static void showhelp(char *program)
     "-b, --biosonly  Only output BIOS Versions (implies -s with <OpenCLID>:<BIOSVersion> output)\n"
     "-c, --memconfig Output the memory configuration\n"
     "-h, --help      Help\n"
-    "-n, --no-opencl Disable OpenCL information lookup\n"
     "-q, --quiet     Only output results\n"
     "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
     "--use-stderr    Output errors to stderr\n"
@@ -177,8 +175,6 @@ static bool load_options(int argc, char *argv[])
     if (!strcasecmp("--help", argv[i]) || !strcasecmp("-h", argv[i])) {
       showhelp(argv[0]);
       return false;
-    } else if (!strcasecmp("--opencl", argv[i]) || !strcasecmp("-o", argv[i])) {
-      opt_opencl_order = true;
     } else if (!strcasecmp("--biosonly", argv[i]) || !strcasecmp("-b", argv[i])) {
       opt_bios_only = true;
       opt_output_short = true;
