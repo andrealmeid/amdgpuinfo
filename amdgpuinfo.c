@@ -763,6 +763,12 @@ int main(int argc, char *argv[])
     // long form (original)
     } else {
       if (d->gpu) {
+
+        char subsystem[256];
+        pci_lookup_name(pci, subsystem, sizeof(subsystem),
+          PCI_LOOKUP_SUBSYSTEM | PCI_LOOKUP_VENDOR | PCI_LOOKUP_DEVICE,
+          d->vendor_id, d->device_id, d->subvendor, d->subdevice);
+
         printf(	"-----------------------------------\n"
           "Found Card: %04x:%04x rev %02x (AMD %s)\n"
           "Chip Type: %s\n"
@@ -770,11 +776,12 @@ int main(int argc, char *argv[])
           "PCI: %02x:%02x.%x\n"
           "Subvendor:  0x%04x\n"
           "Subdevice:  0x%04x\n"
+          "Subsystem: %s\n"
           "Sysfs Path: %s\n",
           AMD_PCI_VENDOR_ID, d->gpu->device_id, d->pcirev, d->gpu->name,
           amd_asic_name[d->gpu->asic_type], d->bios_version,
           d->pcibus, d->pcidev, d->pcifunc,
-          d->subvendor, d->subdevice,
+          d->subvendor, d->subdevice, subsystem,
           d->path);
 
         if (opt_show_memconfig) {
