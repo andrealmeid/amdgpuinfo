@@ -29,7 +29,6 @@ Get informations from AMD Radeon GPUs.
 
 Options:
 * `-h` `--help` Display Help
-* `-q` `--quiet` Only output results
 * `-s` `--short` Short form output - 1 GPU/line - `<OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>`
 * `--use-stderr` Output errors to stderr
 

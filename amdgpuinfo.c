@@ -126,17 +126,12 @@ static const char *amd_asic_name[] = {
  ***********************************/
 bool opt_bios_only = false; // --biosonly / -b
 bool opt_output_short = false; // --short / -s
-bool opt_quiet = false;  // --quiet / -q to turn off
 bool opt_use_stderr = false;  // --use-stderr
 bool opt_show_memconfig = false; // --memconfig / -c
 
 // output function that only displays if verbose is on
 static void print(int priority, const char *fmt, ...)
 {
-  if (opt_quiet && !(priority == LOG_ERROR && opt_use_stderr)) {
-    return;
-  }
-
   va_list args;
 
   va_start(args, fmt);
@@ -158,7 +153,6 @@ static void showhelp(char *program)
     "-b, --biosonly  Only output BIOS Versions (implies -s with <OpenCLID>:<BIOSVersion> output)\n"
     "-c, --memconfig Output the memory configuration\n"
     "-h, --help      Help\n"
-    "-q, --quiet     Only output results\n"
     "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
     "--use-stderr    Output errors to stderr\n"
     "\n", program);
@@ -180,8 +174,6 @@ static bool load_options(int argc, char *argv[])
       opt_output_short = true;
     } else if (!strcasecmp("--short", argv[i]) || !strcasecmp("-s", argv[i])) {
       opt_output_short = true;
-    } else if (!strcasecmp("--quiet", argv[i]) || !strcasecmp("-q", argv[i])) {
-      opt_quiet = true;
     } else if (!strcasecmp("--memconfig", argv[i]) || !strcasecmp("-c", argv[i])) {
       opt_show_memconfig = true;
     } else if (!strcasecmp("--use-stderr", argv[i])) {
