@@ -149,10 +149,10 @@ static void showhelp(char *program)
     NAME " v"  VERSION "\n\n"
     "Usage: %s [options]\n\n"
     "Options:\n"
-    "-b, --biosonly  Only output BIOS Versions (implies -s with <OpenCLID>:<BIOSVersion> output)\n"
+    "-b, --biosonly  Only output BIOS Versions (implies -s with <BIOSVersion> output)\n"
     "-c, --memconfig Output the memory configuration\n"
     "-h, --help      Help\n"
-    "-s, --short     Short form output - 1 GPU/line - <OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
+    "-s, --short     Short form output - 1 GPU/line - <PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
     "\n", program);
 }
 

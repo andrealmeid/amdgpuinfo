@@ -29,4 +29,4 @@ Get informations from AMD Radeon GPUs.
 
 Options:
 * `-h` `--help` Display Help
-* `-s` `--short` Short form output - 1 GPU/line - `<OpenCLID>:<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>`
+* `-s` `--short` Short form output - 1 GPU/line - `<PCI Bus.Dev.Func>:<GPU Type>:<Memory Type>`
