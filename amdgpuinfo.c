@@ -623,6 +623,7 @@ int main(int argc, char *argv[])
   off_t base;
   int *pcimem;
   int fail=0;
+  bool found = false;
 
   if (!load_options(argc, argv)) {
     return 0;
@@ -662,6 +663,8 @@ int main(int argc, char *argv[])
         if (!d->gpu) {
           printf("AMD card found, but model not found.\n");
           continue;
+        } else {
+	  found = true;
         }
 
         if (dump_vbios(d))
@@ -816,6 +819,9 @@ int main(int argc, char *argv[])
   }
 
   free_devices();
+
+  if (!found)
+    printf("No AMD Graphic Card found\n");
 
   if (fail) {
     print(LOG_ERROR, "Direct PCI access failed. Run AMDGPUInfo as root to get memory type information!\n");
