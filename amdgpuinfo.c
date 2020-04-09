@@ -659,6 +659,10 @@ int main(int argc, char *argv[])
         d->path = strdup(buf);
 
         d->gpu = find_gpu(pcidev->device_id, d->subdevice, d->pcirev);
+        if (!d->gpu) {
+          printf("AMD card found, but model not found.\n");
+          continue;
+        }
 
         if (dump_vbios(d))
           get_bios_version(d);
