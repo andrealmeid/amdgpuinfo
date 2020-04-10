@@ -515,7 +515,7 @@ static size_t dump_vbios(gpu_t *gpu)
 
   //unlock vbios
   if ((fp = fopen(obj, "w")) == NULL) {
-    print(LOG_ERROR, "%02x:%02x.%x: Unable to unlock vbios\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
+    print(LOG_ERROR, "%02x:%02x.%x: Unable to unlock vbios (try running as root)\n", gpu->pcibus, gpu->pcidev, gpu->pcifunc);
     return 0;
   }
 
@@ -658,6 +658,7 @@ int main(int argc, char *argv[])
         memset(buf, 0, 1024);
         sprintf(buf, "%s/devices/%04x:%02x:%02x.%d", sysfs_path, pcidev->domain, pcidev->bus, pcidev->dev, pcidev->func);
         d->path = strdup(buf);
+
 
         d->gpu = find_gpu(pcidev->device_id, d->subdevice, d->pcirev);
         if (!d->gpu) {
