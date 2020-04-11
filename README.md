@@ -8,7 +8,7 @@ Get informations from AMD Radeon GPUs.
 
 ### Dependencies
 
-* libpci
+* pciutils
 
 ### Build
 
