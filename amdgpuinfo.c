@@ -768,8 +768,8 @@ int main(int argc, char *argv[])
 
 				char subsystem[256];
 				pci_lookup_name(pci, subsystem, sizeof(subsystem),
-					PCI_LOOKUP_SUBSYSTEM | PCI_LOOKUP_VENDOR | PCI_LOOKUP_DEVICE,
-					d->vendor_id, d->device_id, d->subvendor, d->subdevice);
+					PCI_LOOKUP_SUBSYSTEM | PCI_LOOKUP_VENDOR,
+					d->subvendor);
 
 				printf(	"-----------------------------------\n"
 					"Found Card: %04x:%04x rev %02x (AMD %s)\n"
