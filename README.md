@@ -2,6 +2,8 @@
 
 Get informations from AMD Radeon GPUs.
 
+- [AUR package](https://aur.archlinux.org/packages/amdgpuinfo-git)
+
 ---
 
 ### Dependencies
