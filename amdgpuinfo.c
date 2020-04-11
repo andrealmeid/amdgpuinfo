@@ -189,41 +189,41 @@ typedef struct {
 
 static gputype_t gputypes[] = {
 	/* Vega */
-	{ 0x687f, 0, 0,		 "Radeon RX Vega", CHIP_VEGA10},
+	{ 0x687f, 0, 0,	   "Radeon RX Vega", CHIP_VEGA10},
 	{ 0x687f, 0, 0xc0, "Radeon RX Vega 64", CHIP_VEGA10},
 	{ 0x687f, 0, 0xc1, "Radeon RX Vega 64", CHIP_VEGA10},
 	{ 0x687f, 0, 0xc3, "Radeon RX Vega 56", CHIP_VEGA10},
-	{ 0x6863, 0, 0,		 "Radeon Vega FE", CHIP_VEGA10},
+	{ 0x6863, 0, 0,	   "Radeon Vega FE", CHIP_VEGA10},
 
 	/*Vega20*/
-	{ 0x66af, 0, 0,		 "Radeon VII", CHIP_VEGA20},
+	{ 0x66af, 0, 0,	   "Radeon VII", CHIP_VEGA20},
 	{ 0x66af, 0, 0xc4, "Radeon VII", CHIP_VEGA20},
 
 	/*Navi10*/
-	{ 0x7310, 0, 0,		 "Radeon RX 5700", CHIP_NAVI10},
-	{ 0x7312, 0, 0,		 "Radeon Pro W5700", CHIP_NAVI10},
-	{ 0x7318, 0, 0,		 "Radeon RX 5700", CHIP_NAVI10},
-	{ 0x7319, 0, 0,		 "Radeon RX 5700", CHIP_NAVI10},
-	{ 0x731a, 0, 0,		 "Radeon RX 5700", CHIP_NAVI10},
-	{ 0x731b, 0, 0,		 "Radeon RX 5700", CHIP_NAVI10},
-	{ 0x731f, 0, 0,		 "Radeon RX 5600/5700", CHIP_NAVI10},
+	{ 0x7310, 0, 0,	"Radeon RX 5700",   CHIP_NAVI10},
+	{ 0x7312, 0, 0,	"Radeon Pro W5700", CHIP_NAVI10},
+	{ 0x7318, 0, 0,	"Radeon RX 5700", CHIP_NAVI10},
+	{ 0x7319, 0, 0,	"Radeon RX 5700", CHIP_NAVI10},
+	{ 0x731a, 0, 0,	"Radeon RX 5700", CHIP_NAVI10},
+	{ 0x731b, 0, 0,	"Radeon RX 5700", CHIP_NAVI10},
+	{ 0x731f, 0, 0,	"Radeon RX 5600/5700",  CHIP_NAVI10},
 	{ 0x731f, 0, 0xc0, "Radeon RX 5700 XT", CHIP_NAVI10}, /* XTX or 50th Anniversary Edition */
 	{ 0x731f, 0, 0xc1, "Radeon RX 5700 XT", CHIP_NAVI10},
-	{ 0x731f, 0, 0xc4, "Radeon RX 5700",		CHIP_NAVI10},
+	{ 0x731f, 0, 0xc4, "Radeon RX 5700",    CHIP_NAVI10},
 	{ 0x731f, 0, 0xca, "Radeon RX 5600 XT", CHIP_NAVI10},
 	/* Navi12 */
 	{ 0x7360, 0, 0, "Radeon Navi 12", CHIP_NAVI12},
 	{ 0x7362, 0, 0, "Radeon Navi 12", CHIP_NAVI12},
 
 	/*Navi14*/
-	{ 0x7340, 0, 0,		 "Radeon RX 5500",		CHIP_NAVI14},
+	{ 0x7340, 0, 0,	"Radeon RX 5500", CHIP_NAVI14},
 	{ 0x7340, 0, 0xc5, "Radeon RX 5500 XT", CHIP_NAVI14},
 	{ 0x7341, 0, 0, "Radeon Pro W5500", CHIP_NAVI14},
 	{ 0x7347, 0, 0, "Radeon Pro W5500M", CHIP_NAVI14},
 	{ 0x734f, 0, 0, "Radeon Pro W5500M", CHIP_NAVI14},
 
 	/* Fury/Nano */
-	{ 0x7300, 0, 0,		 "Radeon R9 Fury/Nano/X", CHIP_FIJI},
+	{ 0x7300, 0, 0,	"Radeon R9 Fury/Nano/X", CHIP_FIJI},
 	{ 0x7300, 0, 0xc8, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
 	{ 0x7300, 0, 0xc9, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
 	{ 0x7300, 0, 0xca, "Radeon R9 Fury/Nano/X", CHIP_FIJI},
@@ -241,20 +241,20 @@ static gputype_t gputypes[] = {
 	{ 0x699f, 0, 0xc7, "Radeon RX 550", CHIP_POLARIS12},
 	/* RX 4xx */
 	{ 0x67df, 0, 0, "Radeon RX 470/480", CHIP_POLARIS10},
-	{ 0x67df, 0, 0xc7, "Radeon RX 480", CHIP_POLARIS10},
-	{ 0x67df, 0, 0xcf, "Radeon RX 470", CHIP_POLARIS10},
-	{ 0x67ef, 0, 0, "Radeon RX 460", CHIP_POLARIS11},
-	{ 0x67ef, 0, 0xc0, "Radeon RX 460", CHIP_POLARIS11},
-	{ 0x67ef, 0, 0xc1, "Radeon RX 460", CHIP_POLARIS11},
-	{ 0x67ef, 0, 0xc5, "Radeon RX 460", CHIP_POLARIS11},
-	{ 0x67ef, 0, 0xcf, "Radeon RX 460", CHIP_POLARIS11},
+	{ 0x67df, 0, 0xc7, "Radeon RX 480",  CHIP_POLARIS10},
+	{ 0x67df, 0, 0xcf, "Radeon RX 470",  CHIP_POLARIS10},
+	{ 0x67ef, 0, 0, "Radeon RX 460",     CHIP_POLARIS11},
+	{ 0x67ef, 0, 0xc0, "Radeon RX 460",  CHIP_POLARIS11},
+	{ 0x67ef, 0, 0xc1, "Radeon RX 460",  CHIP_POLARIS11},
+	{ 0x67ef, 0, 0xc5, "Radeon RX 460",  CHIP_POLARIS11},
+	{ 0x67ef, 0, 0xcf, "Radeon RX 460",  CHIP_POLARIS11},
 	/* R9 3xx */
-	{ 0x67b1, 0, 0x80, "Radeon R9 390", CHIP_HAWAII},
+	{ 0x67b1, 0, 0x80, "Radeon R9 390",  CHIP_HAWAII},
 	{ 0x67b0, 0, 0x80, "Radeon R9 390x", CHIP_HAWAII},
-	{ 0x6939, 0, 0xf1, "Radeon R9 380", CHIP_TONGA},
-	{ 0x6938, 0, 0, "Radeon R9 380x", CHIP_TONGA},
-	{ 0x6810, 0, 0x81, "Radeon R7 370", CHIP_PITCAIRN},
-	{ 0x665f, 0, 0x81, "Radeon R7 360", CHIP_BONAIRE},
+	{ 0x6939, 0, 0xf1, "Radeon R9 380",  CHIP_TONGA},
+	{ 0x6938, 0, 0, "Radeon R9 380x",    CHIP_TONGA},
+	{ 0x6810, 0, 0x81, "Radeon R7 370",  CHIP_PITCAIRN},
+	{ 0x665f, 0, 0x81, "Radeon R7 360",  CHIP_BONAIRE},
 	/* R9 2xx */
 	{ 0x67B9, 0, 0, "Radeon R9 295x2", CHIP_HAWAII},
 	{ 0x67b1, 0, 0, "Radeon R9 290/R9 390", CHIP_HAWAII},
@@ -285,6 +285,7 @@ static gputype_t gputypes[] = {
 	{ 0x6898, 0, 0, "Radeon HD5870", CHIP_CYPRESS},
 	{ 0x6899, 0, 0, "Radeon HD5850", CHIP_CYPRESS},
 	{ 0x689E, 0, 0, "Radeon HD5830", CHIP_CYPRESS},
+
 	{ 0, 0, 0, "Unknown", CHIP_UNKNOWN}
 };
 
