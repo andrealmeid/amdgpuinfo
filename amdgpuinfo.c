@@ -148,9 +148,9 @@ static void showhelp(char *program)
 	NAME " v"  VERSION "\n\n"
 	"Usage: %s [options]\n\n"
 	"Options:\n"
-	"-b, --biosonly  Only output BIOS Versions (implies -s with <BIOSVersion> output)\n"
-	"-h, --help			 Help\n"
-	"-s, --short		 Short form output - 1 GPU/line - <PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
+	"-b, --biosonly	Only output BIOS Versions (implies -s with <BIOSVersion> output)\n"
+	"-h, --help	Help\n"
+	"-s, --short	Short form output - 1 GPU/line - <PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
 	"\n", program);
 }
 
