@@ -1,0 +1,15 @@
+stages:
+    - build
+
+build:arch:
+    image: "archlinux"
+    stage: build
+    before_script:
+        - pacman -Sy meson pciutils pkgconfig gcc libffi --noconfirm --needed
+
+    script:
+        - ldconfig
+        - arch-meson build
+        - ninja -C build
+        - ninja -C build install
+        - amdgpuinfo
