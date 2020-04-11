@@ -126,7 +126,6 @@ static const char *amd_asic_name[] = {
  ***********************************/
 bool opt_bios_only = false; // --biosonly / -b
 bool opt_output_short = false; // --short / -s
-bool opt_show_memconfig = false; // --memconfig / -c
 
 // output function that only displays if verbose is on
 static void print(int priority, const char *fmt, ...)
@@ -150,7 +149,6 @@ static void showhelp(char *program)
 	"Usage: %s [options]\n\n"
 	"Options:\n"
 	"-b, --biosonly  Only output BIOS Versions (implies -s with <BIOSVersion> output)\n"
-	"-c, --memconfig Output the memory configuration\n"
 	"-h, --help			 Help\n"
 	"-s, --short		 Short form output - 1 GPU/line - <PCI Bus.Dev.Func>:<GPU Type>:<BIOSVersion>:<Memory Type>\n"
 	"\n", program);
@@ -172,8 +170,6 @@ static bool load_options(int argc, char *argv[])
 			opt_output_short = true;
 		} else if (!strcasecmp("--short", argv[i]) || !strcasecmp("-s", argv[i])) {
 			opt_output_short = true;
-		} else if (!strcasecmp("--memconfig", argv[i]) || !strcasecmp("-c", argv[i])) {
-			opt_show_memconfig = true;
 		}
 	}
 
@@ -753,9 +749,7 @@ int main(int argc, char *argv[])
 
 				printf("%s:", d->bios_version);
 
-				if (opt_show_memconfig) {
-					printf("0x%x:", d->memconfig);
-				}
+				printf("0x%x:", d->memconfig);
 
 				if (d->mem && d->mem->manufacturer != 0) {
 					printf("%s:%s:", d->mem->name, mem_type_label[d->mem->type]);
@@ -791,9 +785,7 @@ int main(int argc, char *argv[])
 					d->subvendor, d->subdevice, subsystem,
 					d->path);
 
-				if (opt_show_memconfig) {
-					printf("Memory Configuration: 0x%x\n", d->memconfig);
-				}
+				printf("Memory Configuration: 0x%x\n", d->memconfig);
 
 				printf("Memory Model: ");
 
